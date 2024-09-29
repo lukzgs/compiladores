@@ -14,7 +14,7 @@ link: compile
 	
 # Limpa os arquivos gerados
 clean:
-	rm build/* $(ETAPA)
+	rm -f build/* $(ETAPA)
 
 # Padrão do Makefile, executa o alvo "run" por padrão
 .DEFAULT_GOAL := link
