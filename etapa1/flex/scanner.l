@@ -47,7 +47,7 @@
 "," { return ','; }
 ";" { return ';'; }
 
-([a-z]|_)([a-zA-Z]|[0-9])+ 	{ return TK_IDENTIFICADOR; }
+([a-z]|_)([a-z]|[0-9]|_)* 	{ return TK_IDENTIFICADOR; }
 
 [0-9]+ { return TK_LIT_INT; }
 [0-9]*\.[0-9]+ { return TK_LIT_FLOAT; }
