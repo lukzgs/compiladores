@@ -8,11 +8,8 @@
 
 %option yylineno
 %option noyywrap
-%x COMMENT
 
 %%
-
-"//" { BEGIN(COMMENT); }
 
 (\/\/).* { }
 [ \t]+   { }
