@@ -1,0 +1,6 @@
+int
+float
+if
+else
+while
+return

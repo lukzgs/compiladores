@@ -1,0 +1,6 @@
+1 TK_PR_INT [int]
+2 TK_PR_FLOAT [float]
+3 TK_PR_IF [if]
+4 TK_PR_ELSE [else]
+5 TK_PR_WHILE [while]
+6 TK_PR_RETURN [return]

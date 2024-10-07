@@ -1,0 +1,6 @@
+1 TK_OC_LE [<=]
+1 TK_OC_GE [>=]
+1 TK_OC_EQ [==]
+1 TK_OC_NE [!=]
+1 TK_OC_AND [&]
+1 TK_OC_OR [|]
