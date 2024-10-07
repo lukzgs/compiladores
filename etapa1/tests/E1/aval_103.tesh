@@ -1,0 +1,5 @@
+#! ./tesh
+! timeout 1
+$ ./main < tests/e1/entrada_103
+> 1 TK_IDENTIFICADOR [func1]
+> 2 TK_IDENTIFICADOR [func_test]

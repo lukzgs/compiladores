@@ -1,0 +1,6 @@
+#! ./tesh
+! timeout 1
+$ ./main < tests/e1/entrada_076
+> 1 TK_IDENTIFICADOR [id12]
+> 2 TK_LIT_INT [34]
+> 3 TK_LIT_FLOAT [56.78]
