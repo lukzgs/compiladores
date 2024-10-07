@@ -12,7 +12,7 @@
 %%
 
 \/\/.* { }
-[ \t]+   { }
+[[:space:]]+   { }
 
 "int" {return TK_PR_INT; }
 "float" { return TK_PR_FLOAT; }
