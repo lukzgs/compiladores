@@ -6,11 +6,11 @@ build/lex.yy.c: flex/scanner.l
 
 # Compila os arquivos gerados pelo Flex
 build/lex.yy.o: build/lex.yy.c
-	gcc -c build/lex.yy.c -o build/lex.yy.o
+	gcc -I include/ -c build/lex.yy.c -o build/lex.yy.o
 
 # Linka os arquivos compilados e gera o executável
 $(ETAPA): build/lex.yy.o
-	gcc -o $(ETAPA) src/main.c build/lex.yy.o  -lfl -Wall
+	gcc -o $(ETAPA) src/main.c build/lex.yy.o  -lfl -Wall 
 	
 # Limpa os arquivos gerados
 clean:
