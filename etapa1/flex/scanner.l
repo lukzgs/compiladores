@@ -28,21 +28,9 @@
 "&" { return TK_OC_AND; }
 "|" { return TK_OC_OR; }
 
-"!" { return '!'; }
-"*" { return '*'; }
-"/" { return '/'; }
-"%" { return '%'; }
-"+" { return '+'; }
-"-" { return '-'; }
-"<" { return '<'; }
-">" { return '>'; }
-"{" { return '{'; }
-"}" { return '}'; }
-"(" { return '('; }
-")" { return ')'; }
-"=" { return '='; }
-"," { return ','; }
-";" { return ';'; }
+
+
+"!"|"*"|"/"|"%"|"+"|"-"|"<"|">"|"{"|"}"|"("|")"|"="|","|";" { return yytext[0]; }
 
 ([a-z]|_)([a-z]|[0-9]|_)* 	{ return TK_IDENTIFICADOR; }
 
