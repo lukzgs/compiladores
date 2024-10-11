@@ -28,15 +28,12 @@
 "&" { return TK_OC_AND; }
 "|" { return TK_OC_OR; }
 
-
-
 "!"|"*"|"/"|"%"|"+"|"-"|"<"|">"|"{"|"}"|"("|")"|"="|","|";" { return yytext[0]; }
 
 ([a-z]|_)([a-z]|[0-9]|_)* 	{ return TK_IDENTIFICADOR; }
 
 [0-9]+ { return TK_LIT_INT; }
 [0-9]*\.[0-9]+ { return TK_LIT_FLOAT; }
-
 
 . { return TK_ERRO; }
 
