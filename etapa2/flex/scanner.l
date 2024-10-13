@@ -3,7 +3,7 @@
 /* Vithor Barros Pileco - 326674 */
 
 %{
-#include "parser.tab.h"
+#include "tokens.h"
 %}
 
 %option yylineno
