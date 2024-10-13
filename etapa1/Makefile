@@ -1,20 +1,32 @@
-ETAPA := etapa1
+ETAPA=etapa1
 
-# Gera o scanner com o Flex
-build/lex.yy.c: flex/scanner.l
-	flex -o build/lex.yy.c flex/scanner.l
+IDIR =include
+CC=gcc
+CFLAGS=-I$(IDIR)
+ODIR=build
+CDIR=src
 
-# Compila os arquivos gerados pelo Flex
-build/lex.yy.o: build/lex.yy.c
-	gcc -I include/ -c build/lex.yy.c -o build/lex.yy.o
+_DEPS = tokens.h
+DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-# Linka os arquivos compilados e gera o executável
-$(ETAPA): build/lex.yy.o
-	gcc -o $(ETAPA) src/main.c build/lex.yy.o  -lfl -Wall 
-	
-# Limpa os arquivos gerados
-clean:
-	rm -f build/* $(ETAPA)
+_FLEX_FILE = flex/scanner.l
+_FLEX_SRC = build/lex.yy.c
 
-# Padrão do Makefile, executa o alvo "run" por padrão
+_OBJ = main.o lex.yy.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+
+$(_FLEX_SRC): $(_FLEX_FILE)
+	flex -o $(_FLEX_SRC) $(_FLEX_FILE)
+
+$(ODIR)/%.o: $(CDIR)/%.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+$(ETAPA): $(OBJ)
+	$(CC) -o $(ETAPA) $^ $(CFLAGS)
+
+.PHONY: clean
 .DEFAULT_GOAL := $(ETAPA)
+
+clean:
+	rm -f $(ODIR)/* *~ $(ETAPA) 
+
