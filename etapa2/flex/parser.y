@@ -37,7 +37,7 @@ void yyerror (char const *mensagem);
 
 programa: linguagem ; // ok
 
-linguagem: lista_funcao | /* vazio */ ; // ok
+linguagem: lista_funcao ; // ok
 lista_funcao: funcao lista_funcao | /* vazio */ ; // ok
 
 funcao: cabecalho corpo ; // ok
@@ -49,27 +49,24 @@ tipo: TK_PR_INT | TK_PR_FLOAT ;	// ok
 lista_parametros:	parametro TK_OC_OR lista_parametros | parametro | /* vazio */ ; // ok
 parametro: TK_IDENTIFICADOR '<' '-' tipo ; // ok
 
-bloco_comandos:	'{' lista_comandos '}'; // ok
+bloco_comandos:	'{' lista_comandos '}' ; // ok
 
 lista_comandos:	comando_simples lista_comandos | /* vazio */ ; // ok
 
-comando_simples:	variavel ';' | atribuicao ';' |  fluxo_controle ';' | retorno ';' | bloco_comandos ';' | chamada_funcao ';' /* | condicional_if condicional_else ';' | iterativo ';' */ ;
+comando_simples:	variavel ';' | atribuicao ';' |  fluxo_controle ';' | retorno ';' | bloco_comandos ';' | chamada_funcao ';' ;
 
 variavel:	tipo lista_identificadores ; // ok
-lista_identificadores: TK_IDENTIFICADOR | TK_IDENTIFICADOR ',' lista_identificadores | TK_IDENTIFICADOR TK_OC_LE literal ',' lista_identificadores; // ok
+lista_identificadores: TK_IDENTIFICADOR | TK_IDENTIFICADOR ',' lista_identificadores | TK_IDENTIFICADOR TK_OC_LE literal ',' lista_identificadores ; // ok
 
-atribuicao:	TK_IDENTIFICADOR '=' exp; // ok
+atribuicao:	TK_IDENTIFICADOR '=' exp ; // ok
 
-fluxo_controle : ;
-retorno:	TK_PR_RETURN exp; // ok
-chamada_funcao:	TK_IDENTIFICADOR '(' lista_expressoes ')' | TK_IDENTIFICADOR '(' ')'; // ok
-lista_expressoes:	exp | exp ',' lista_expressoes; // ok
+fluxo_controle: condicional_if | iterativo ; // ok
+retorno:	TK_PR_RETURN exp ; // ok
+chamada_funcao: TK_IDENTIFICADOR '(' lista_expressoes ')' | TK_IDENTIFICADOR '(' ')'; // ok
+lista_expressoes:	exp | exp ',' lista_expressoes ; // ok
 
-
-condicional_if:	TK_PR_IF '(' exp ')' bloco_comandos;
-condicional_else:	TK_PR_ELSE bloco_comandos | /* vazio */;
-
-iterativo:	TK_PR_WHILE '(' exp ')' bloco_comandos;
+condicional_if: TK_PR_IF '(' exp ')' bloco_comandos | TK_PR_IF '(' exp ')' TK_PR_ELSE bloco_comandos ; // ok
+iterativo: TK_PR_WHILE '(' exp ')' bloco_comandos ; // ok
 
 exp:	exp2 | exp TK_OC_OR exp2;
 exp2:	exp3 | exp2 TK_OC_AND exp3;
