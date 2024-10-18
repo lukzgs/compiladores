@@ -43,20 +43,20 @@ lista_funcao: funcao lista_funcao | /* vazio */ ; // ok
 funcao: cabecalho corpo ; // ok
 
 cabecalho: TK_IDENTIFICADOR '=' lista_parametros '>' tipo ; // ok
-corpo: '{' bloco_comandos '}' ; // ok
+corpo: bloco_comandos ; // ok
 
 tipo: TK_PR_INT | TK_PR_FLOAT ;	// ok
 lista_parametros:	parametro TK_OC_OR lista_parametros | parametro | /* vazio */ ; // ok
 parametro: TK_IDENTIFICADOR '<' '-' tipo ; // ok
 
-bloco_comandos:	lista_comandos; // ok
+bloco_comandos:	'{' lista_comandos '}'; // ok
 
 lista_comandos:	comando_simples lista_comandos | /* vazio */ ; // ok
 
 comando_simples:	variavel ';' | atribuicao ';' |  fluxo_controle ';' | retorno ';' | bloco_comandos ';' | chamada_funcao ';' /* | condicional_if condicional_else ';' | iterativo ';' */ ;
 
-variavel:	tipo TK_IDENTIFICADOR | tipo lista_identificadores | tipo TK_IDENTIFICADOR TK_OC_LE literal; // acho que ok
-lista_identificadores: TK_IDENTIFICADOR ',' lista_identificadores | TK_IDENTIFICADOR TK_OC_LE literal ',' lista_identificadores | TK_IDENTIFICADOR ; // acho que ok
+variavel:	tipo lista_identificadores ; // ok
+lista_identificadores: TK_IDENTIFICADOR | TK_IDENTIFICADOR ',' lista_identificadores | TK_IDENTIFICADOR TK_OC_LE literal ',' lista_identificadores; // ok
 
 atribuicao:	TK_IDENTIFICADOR '=' exp; // ok
 
