@@ -56,7 +56,7 @@ lista_comandos:	comando_simples lista_comandos | /* vazio */ ; // ok
 comando_simples:	variavel ';' | atribuicao ';' |  fluxo_controle ';' | retorno ';' | bloco_comandos ';' | chamada_funcao ';' /* | condicional_if condicional_else ';' | iterativo ';' */ ;
 
 variavel:	tipo TK_IDENTIFICADOR | tipo lista_identificadores | tipo TK_IDENTIFICADOR TK_OC_LE literal; // acho que ok
-lista_identificadores: TK_IDENTIFICADOR ',' lista_identificadores | TK_IDENTIFICADOR TK_OC_LE literal lista_identificadores | TK_IDENTIFICADOR ; // acho que ok
+lista_identificadores: TK_IDENTIFICADOR ',' lista_identificadores | TK_IDENTIFICADOR TK_OC_LE literal ',' lista_identificadores | TK_IDENTIFICADOR ; // acho que ok
 
 atribuicao:	TK_IDENTIFICADOR '=' exp; // ok
 
