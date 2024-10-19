@@ -30,7 +30,6 @@ void yyerror (char const *mensagem);
 %token TK_LIT_FLOAT
 %token TK_ERRO
 
-%define parse.error detailed;
 %start programa;
 
 %%
@@ -85,4 +84,3 @@ void yyerror(char const *s)
 	extern int yylineno;
 	printf("ERRO - LINHA %d - %s\n", yylineno, s);	
 }
-%%
