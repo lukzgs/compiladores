@@ -34,38 +34,42 @@ void yyerror (char const *mensagem);
 
 %%
 
-programa: linguagem ; // ok
+programa: lista_funcao ; 
 
-linguagem: lista_funcao ; // ok
-lista_funcao: funcao lista_funcao | /* vazio */ ; // ok
+lista_funcao: funcao lista_funcao | /* vazio */ ;
 
-funcao: cabecalho corpo ; // ok
+funcao: cabecalho corpo ; 
 
-cabecalho: TK_IDENTIFICADOR '=' lista_parametros '>' tipo ; // ok
-corpo: bloco_comandos ; // ok
+cabecalho: TK_IDENTIFICADOR '=' lista_parametros_opcional '>' tipo ; 
+corpo: bloco_comandos ; 
 
-tipo: TK_PR_INT | TK_PR_FLOAT ;	// ok
-lista_parametros:	parametro TK_OC_OR lista_parametros | parametro | /* vazio */ ; // ok
-parametro: TK_IDENTIFICADOR '<' '-' tipo ; // ok
+tipo: TK_PR_INT | TK_PR_FLOAT ;	
+lista_parametros_opcional: parametro TK_OC_OR lista_parametros | parametro | /* vazio */ ; 
+lista_parametros: parametro TK_OC_OR lista_parametros | parametro; 
+parametro: TK_IDENTIFICADOR '<' '-' tipo ; 
 
-bloco_comandos:	'{' lista_comandos '}' ; // ok
+bloco_comandos:	'{' lista_comandos '}' ;
 
-lista_comandos:	comando_simples lista_comandos | /* vazio */ ; // ok
+lista_comandos:	comando_simples lista_comandos | /* vazio */ ;
 
-comando_simples:	variavel ';' | atribuicao ';' |  fluxo_controle ';' | retorno ';' | bloco_comandos ';' | chamada_funcao ';' ;
+comando_simples:	declaracao_variavel ';' | atribuicao ';' |  fluxo_controle ';' | retorno ';' | bloco_comandos ';' | chamada_funcao ';' ;
 
-variavel:	tipo lista_identificadores ; // ok
-lista_identificadores: TK_IDENTIFICADOR | TK_IDENTIFICADOR ',' lista_identificadores | TK_IDENTIFICADOR TK_OC_LE literal ',' lista_identificadores ; // ok
+declaracao_variavel:	tipo lista_identificadores ; 
+lista_identificadores: variavel | variavel ',' lista_identificadores ; 
+variavel: TK_IDENTIFICADOR | TK_IDENTIFICADOR TK_OC_LE literal ; 
 
-atribuicao:	TK_IDENTIFICADOR '=' exp ; // ok
+atribuicao:	TK_IDENTIFICADOR '=' exp ; 
 
-fluxo_controle: condicional_if | iterativo ; // ok
-retorno:	TK_PR_RETURN exp ; // ok
-chamada_funcao: TK_IDENTIFICADOR '(' lista_expressoes ')' | TK_IDENTIFICADOR '(' ')'; // ok
-lista_expressoes:	exp | exp ',' lista_expressoes ; // ok
+chamada_funcao: TK_IDENTIFICADOR '(' lista_expressoes_opcional ')'; // comentário feito no forum 
+lista_expressoes_opcional: exp | exp ',' lista_expressoes | /* vazio */ ; // comentário feito no forum 
+lista_expressoes:	exp | exp ',' lista_expressoes ; // comentário feito no forum 
 
-condicional_if: TK_PR_IF '(' exp ')' bloco_comandos | TK_PR_IF '(' exp ')' TK_PR_ELSE bloco_comandos ; // ok
-iterativo: TK_PR_WHILE '(' exp ')' bloco_comandos ; // ok
+fluxo_controle: condicional_if | iterativo ; 
+retorno:	TK_PR_RETURN exp ; 
+
+condicional_if: TK_PR_IF '(' exp ')' bloco_comandos else_opcional ; 
+else_opcional: TK_PR_ELSE bloco_comandos | /* vazoio */ ; 
+iterativo: TK_PR_WHILE '(' exp ')' bloco_comandos ;
 
 exp:	exp2 | exp TK_OC_OR exp2;
 exp2:	exp3 | exp2 TK_OC_AND exp3;
@@ -73,9 +77,9 @@ exp3:	exp4 | exp3 TK_OC_EQ exp4 | exp3 TK_OC_NE exp4;
 exp4:	exp5 | exp4 '<' exp5 | exp4 '>' exp5 | exp4 TK_OC_LE exp5 | exp4 TK_OC_GE exp5;
 exp5:	exp6 | exp5 '+' exp6 | exp5 '-' exp6;
 exp6:	exp7 | exp6 '*' exp7 | exp6 '/' exp7 | exp6 '%' exp7;
-exp7:	'(' exp ')' | '!' exp7 | '-' exp7 | TK_IDENTIFICADOR | literal;
+exp7:	'(' exp ')' | '!' exp7 | '-' exp7 | TK_IDENTIFICADOR | literal | chamada_funcao ;
 
-literal:	TK_LIT_INT | TK_LIT_FLOAT ; // ok
+literal:TK_LIT_INT | TK_LIT_FLOAT ; 
 
 %%
 
