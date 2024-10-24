@@ -1,5 +1,0 @@
-//INCORRECT
-func(char param) -> int{
-    float a,
-    a <= 3.5,
-}

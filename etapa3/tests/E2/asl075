@@ -1,6 +1,0 @@
-//INCORRECT
-f(int a; int b)->int
-{
-  int x,
-  f(x; .),
-}

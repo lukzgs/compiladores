@@ -1,4 +1,0 @@
-//INCORRECT
-f (int a<23>)->int
-{
-}

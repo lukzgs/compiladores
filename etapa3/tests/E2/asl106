@@ -1,5 +1,0 @@
-//CORRECT
-(bool param) | int / fun
-{
-  return 0,
-}
