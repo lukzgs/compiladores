@@ -73,13 +73,12 @@ literal: TK_LIT_INT | TK_LIT_FLOAT ;
 
 
 /* atribuição */
-atribuicao:	TK_IDENTIFICADOR '=' exp ; 
+atribuicao:	TK_IDENTIFICADOR '=' expression ; 
 
 
 /* chamada de função */
-chamada_funcao: TK_IDENTIFICADOR '(' lista_expressoes_ou_vazio ')'; 
-lista_expressoes_ou_vazio: lista_expressoes | /* vazio */ ; 
-lista_expressoes:	exp | exp ',' lista_expressoes ; // comentário feito no forum 
+chamada_funcao: TK_IDENTIFICADOR '(' lista_expressoes ')'; 
+lista_expressoes:	expression | expression ',' lista_expressoes ;
 
 
 /* controle de fluxo */
@@ -87,26 +86,34 @@ fluxo_controle: condicional_if | iterativo ;
 
 
 /* retorno */
-retorno:	TK_PR_RETURN exp ; 
+retorno:	TK_PR_RETURN expression ; 
 
 
 /* condicional */
-condicional_if: TK_PR_IF '(' exp ')' bloco_comandos else_opcional ; 
+condicional_if: TK_PR_IF '(' expression ')' bloco_comandos else_opcional ; 
 else_opcional: TK_PR_ELSE bloco_comandos | /* vazio */ ; 
 
 
 /* iteração */
-iterativo: TK_PR_WHILE '(' exp ')' bloco_comandos ;
+iterativo: TK_PR_WHILE '(' expression ')' bloco_comandos ;
 
 
 /* expressões */
-exp:	exp2 | exp TK_OC_OR exp2;
-exp2:	exp3 | exp2 TK_OC_AND exp3;
-exp3:	exp4 | exp3 TK_OC_EQ exp4 | exp3 TK_OC_NE exp4;
-exp4:	exp5 | exp4 '<' exp5 | exp4 '>' exp5 | exp4 TK_OC_LE exp5 | exp4 TK_OC_GE exp5;
-exp5:	exp6 | exp5 '+' exp6 | exp5 '-' exp6;
-exp6:	exp7 | exp6 '*' exp7 | exp6 '/' exp7 | exp6 '%' exp7;
-exp7:	'(' exp ')' | '!' exp7 | '-' exp7 | TK_IDENTIFICADOR | literal | chamada_funcao ;
+expression: expression_or
+expression_or:	expression_and | expression_or TK_OC_OR expression_and;
+expression_and:	expression_igualdade | expression_and TK_OC_AND expression_igualdade;
+operadores_igualdade: TK_OC_EQ | TK_OC_NE; 
+expression_igualdade:	expression_comparacao | expression_igualdade operadores_igualdade expression_comparacao;
+operadores_comparacao: '>' | '<' |  TK_OC_LE | TK_OC_GE; 
+expression_comparacao:	expression_soma | expression_comparacao operadores_comparacao expression_soma;
+operadores_soma: '+' | '-';
+expression_soma:	expression_multiplicacao | expression_soma operadores_soma expression_multiplicacao;
+operadores_multiplicacao: '*' | '/' | '%'; 
+expression_multiplicacao:	expression_unarias | expression_multiplicacao operadores_multiplicacao expression_unarias;
+operadores_unarios: '!' | '-';
+expression_unarias:  expression_paranteses | operadores | operadores_unarios expression_multiplicacao;
+expression_paranteses: '(' expression ')'; 
+operadores:	TK_IDENTIFICADOR | literal | chamada_funcao ;
 
 
 %%
