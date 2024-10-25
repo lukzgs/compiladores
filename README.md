@@ -2,7 +2,8 @@
 ## Grupo G
 
 
-Para rodar o trabalho, basta abrir o terminal na pasta onde a etapa se encontra e digitar "make"
+Para rodar, basta abrir o terminal na pasta onde a etapa se encontra e digitar 
+> $ make
 
 ### Notas
 - EX.O: resultado dos testes objetivos
