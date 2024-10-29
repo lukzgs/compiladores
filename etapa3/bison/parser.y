@@ -19,8 +19,8 @@ extern void *arvore;
 %}
 
 %union {
-	ValorLexico *valor_lexico;
-	Nodo *nodo;
+  ValorLexico *valor_lexico;
+  Nodo *nodo;
 }
 
 %define parse.error verbose
