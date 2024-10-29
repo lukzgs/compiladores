@@ -6,9 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "arvore.h"
 
 int yylex(void);
 void yyerror (char const *mensagem);
+extern void *arvore;
 
 %}
 
@@ -16,22 +18,73 @@ void yyerror (char const *mensagem);
     extern int yylineno;
 %}
 
+%union {
+	ValorLexico *valor_lexico;
+	Nodo *nodo;
+}
+
 %define parse.error verbose
-%token TK_PR_INT
-%token TK_PR_FLOAT
-%token TK_PR_IF
-%token TK_PR_ELSE
-%token TK_PR_WHILE
-%token TK_PR_RETURN
-%token TK_OC_LE
-%token TK_OC_GE
-%token TK_OC_EQ
-%token TK_OC_NE
-%token TK_OC_AND
-%token TK_OC_OR
-%token TK_IDENTIFICADOR
-%token TK_LIT_INT
-%token TK_LIT_FLOAT
+
+
+%token<valor_lexico> TK_PR_INT
+%token<valor_lexico> TK_PR_FLOAT
+%token<valor_lexico> TK_PR_IF
+%token<valor_lexico> TK_PR_ELSE
+%token<valor_lexico> TK_PR_WHILE
+%token<valor_lexico> TK_PR_RETURN
+%token<valor_lexico> TK_OC_LE
+%token<valor_lexico> TK_OC_GE
+%token<valor_lexico> TK_OC_EQ
+%token<valor_lexico> TK_OC_NE
+%token<valor_lexico> TK_OC_AND
+%token<valor_lexico> TK_OC_OR
+%token<valor_lexico> TK_IDENTIFICADOR
+%token<valor_lexico> TK_LIT_INT
+%token<valor_lexico> TK_LIT_FLOAT
+
+%token<valor_lexico> '='
+%token<valor_lexico> '<'
+%token<valor_lexico> '>'
+%token<valor_lexico> '+'
+%token<valor_lexico> '*'
+%token<valor_lexico> '/'
+%token<valor_lexico> '%'
+%token<valor_lexico> '!'
+%token<valor_lexico> '-'
+
+%type<nodo> programa
+%type<nodo> lista_funcao
+%type<nodo> funcao
+%type<nodo> lista_parametros
+%type<nodo> cabecalho
+%type<nodo> corpo
+%type<nodo> tipo
+
+// até aqui tá garantido
+
+%type<nodo> lista_comandos
+%type<nodo> comando_simples
+%type<nodo> declaracao_local
+%type<nodo> lista_identificadores
+%type<nodo> identificador_local
+%type<nodo> bloco_comandos
+%type<nodo> atribuicao
+%type<nodo> chamada_funcao
+%type<nodo> lista_expressoes
+%type<nodo> retorno
+%type<nodo> clausula_if_com_else_opcional
+%type<nodo> iterativo
+%type<nodo> expressao
+%type<nodo> expressao2
+%type<nodo> expressao3
+%type<nodo> expressao4
+%type<nodo> expressao5
+%type<nodo> expressao6
+%type<nodo> expressao7
+
+
+%type<valor_lexico> literal
+
 %token TK_ERRO
 
 %start programa;
@@ -73,12 +126,12 @@ literal: TK_LIT_INT | TK_LIT_FLOAT ;
 
 
 /* atribuição */
-atribuicao:	TK_IDENTIFICADOR '=' expression ; 
+atribuicao:	TK_IDENTIFICADOR '=' expressao ; 
 
 
 /* chamada de função */
 chamada_funcao: TK_IDENTIFICADOR '(' lista_expressoes ')'; 
-lista_expressoes:	expression | expression ',' lista_expressoes ;
+lista_expressoes:	expressao | expressao ',' lista_expressoes ;
 
 
 /* controle de fluxo */
@@ -86,40 +139,45 @@ fluxo_controle: condicional_if | iterativo ;
 
 
 /* retorno */
-retorno:	TK_PR_RETURN expression ; 
+retorno:	TK_PR_RETURN expressao ; 
 
 
 /* condicional */
-condicional_if: TK_PR_IF '(' expression ')' bloco_comandos else_opcional ; 
+condicional_if: TK_PR_IF '(' expressao ')' bloco_comandos else_opcional ; 
 else_opcional: TK_PR_ELSE bloco_comandos | /* vazio */ ; 
 
 
 /* iteração */
-iterativo: TK_PR_WHILE '(' expression ')' bloco_comandos ;
+iterativo: TK_PR_WHILE '(' expressao ')' bloco_comandos ;
 
 
 /* expressões */
-expression: expression_or
-expression_or:	expression_and | expression_or TK_OC_OR expression_and;
-expression_and:	expression_igualdade | expression_and TK_OC_AND expression_igualdade;
+expressao: expressao_or
+expressao_or:	expressao_and | expressao_or TK_OC_OR expressao_and;
+expressao_and:	expressao_igualdade | expressao_and TK_OC_AND expressao_igualdade;
+
 operadores_igualdade: TK_OC_EQ | TK_OC_NE; 
-expression_igualdade:	expression_comparacao | expression_igualdade operadores_igualdade expression_comparacao;
+expressao_igualdade:	expressao_comparacao | expressao_igualdade operadores_igualdade expressao_comparacao;
+
 operadores_comparacao: '>' | '<' |  TK_OC_LE | TK_OC_GE; 
-expression_comparacao:	expression_soma | expression_comparacao operadores_comparacao expression_soma;
+expressao_comparacao:	expressao_soma | expressao_comparacao operadores_comparacao expressao_soma;
+
 operadores_soma: '+' | '-';
-expression_soma:	expression_multiplicacao | expression_soma operadores_soma expression_multiplicacao;
+expressao_soma:	expressao_multiplicacao | expressao_soma operadores_soma expressao_multiplicacao;
+
 operadores_multiplicacao: '*' | '/' | '%'; 
-expression_multiplicacao:	expression_unarias | expression_multiplicacao operadores_multiplicacao expression_unarias;
+expressao_multiplicacao:	expressao_unarias | expressao_multiplicacao operadores_multiplicacao expressao_unarias;
+
 operadores_unarios: '!' | '-';
-expression_unarias:  expression_paranteses | operadores | operadores_unarios expression_multiplicacao;
-expression_paranteses: '(' expression ')'; 
+expressao_unarias:  expressao_paranteses | operadores | operadores_unarios expressao_multiplicacao;
+
+expressao_paranteses: '(' expressao ')'; 
 operadores:	TK_IDENTIFICADOR | literal | chamada_funcao ;
 
 
 %%
 
-void yyerror(char const *s)
-{
+void yyerror(char const *s) {
 	extern int yylineno;
 	printf("ERRO - LINHA %d - %s\n", yylineno, s);	
 }
