@@ -11,9 +11,9 @@
 #include <stdlib.h>
 
 typedef struct ValorLexico {
-	int linha_token;
-	char *valor_token;
-	int tipo_token;
+  int linha_token;
+  char *valor_token;
+  int tipo_token;
 } ValorLexico;
 
 /* Estrutura para representar um nodo da árvore. */
