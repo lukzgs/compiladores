@@ -64,6 +64,7 @@ extern void *arvore;
 %type<nodo> declaracao_variavel
 %type<nodo> lista_parametros_ou_vazio
 
+
 // até aqui tá garantido
 
 %type<nodo> lista_comandos
