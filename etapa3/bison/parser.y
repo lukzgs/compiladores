@@ -60,10 +60,6 @@ extern void *arvore;
 %type<nodo> corpo
 %type<nodo> tipo
 
-%type<nodo> else_opcional
-%type<nodo> declaracao_variavel
-%type<nodo> lista_parametros_ou_vazio
-
 // até aqui tá garantido
 
 %type<nodo> lista_comandos
@@ -96,16 +92,9 @@ extern void *arvore;
 %%
 
 /* programa */
-programa: 
-	lista_funcao { 
-		$$ = $1; 
-		arvore = $$;
-	}; |
-	/* vazio */ { $$ = NULL; }; 
+programa: lista_funcao | /* vazio */ ; 
 
-lista_funcao: 
-	funcao lista_funcao | 
-	funcao { $$ = $1; } ;
+lista_funcao: funcao lista_funcao | funcao ;
 
 
 /* funcao */
@@ -115,37 +104,25 @@ cabecalho: TK_IDENTIFICADOR '=' lista_parametros_ou_vazio '>' tipo ;
 corpo: bloco_comandos ; 
 
 tipo: TK_PR_INT | TK_PR_FLOAT ;	
-lista_parametros_ou_vazio: 
-	lista_parametros | 
-	/* vazio */ { $$ = NULL; } ; 
+lista_parametros_ou_vazio: lista_parametros | /* vazio */ ; 
 lista_parametros: parametro TK_OC_OR lista_parametros | parametro ; 
 parametro: TK_IDENTIFICADOR '<' '-' tipo ; 
 
-bloco_comandos:	'{' lista_comandos '}' { $$ = $2; };
+bloco_comandos:	'{' lista_comandos '}' ;
 
-lista_comandos:	
-	comando_simples lista_comandos |
-	/* vazio */ { $$ = NULL; } ;
+lista_comandos:	comando_simples lista_comandos | /* vazio */ ;
 
 
 /* comandos */
-comando_simples:
-	declaracao_variavel ';' { $$ = $1; } |
-	atribuicao ';' { $$ = $1; } |
-	fluxo_controle ';' { $$ = $1; } |
-	retorno ';' { $$ = $1; } |
-	bloco_comandos ';' { $$ = $1; } |
-	chamada_funcao ';' { $$ = $1; } ;
+comando_simples:	declaracao_variavel ';' | atribuicao ';' |  fluxo_controle ';' | retorno ';' | bloco_comandos ';' | chamada_funcao ';' ;
 
 
 /* declaração de var */
-declaracao_variavel:	tipo lista_identificadores { $$ = $2; } ; 
+declaracao_variavel:	tipo lista_identificadores ; 
 lista_identificadores: variavel | variavel ',' lista_identificadores ; 
 variavel: TK_IDENTIFICADOR | TK_IDENTIFICADOR TK_OC_LE literal ; 
 
-literal: 
-	TK_LIT_INT { $$ = $1; } |
-	TK_LIT_FLOAT { $$ = $1; } ; 
+literal: TK_LIT_INT | TK_LIT_FLOAT ; 
 
 
 /* atribuição */
@@ -167,9 +144,7 @@ retorno:	TK_PR_RETURN expressao ;
 
 /* condicional */
 condicional_if: TK_PR_IF '(' expressao ')' bloco_comandos else_opcional ; 
-else_opcional: 
-	TK_PR_ELSE bloco_comandos |
-	/* vazio */  { $$ = NULL; } ; 
+else_opcional: TK_PR_ELSE bloco_comandos | /* vazio */ ; 
 
 
 /* iteração */

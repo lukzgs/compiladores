@@ -4,7 +4,7 @@
 #include "arvore.h"
 
 /* Função para criar um novo nó da árvore. */
-Nodo* criaNodo(valor_lexico *info) {
+Nodo* criaNodo(ValorLexico *info) {
   Nodo* novoNodo = (Nodo*)malloc(sizeof(Nodo));
   novoNodo->info = info;
   novoNodo->numeroFilhos = 0;

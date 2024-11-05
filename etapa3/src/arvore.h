@@ -10,30 +10,21 @@
 #include <string.h>
 #include <stdlib.h>
 
-<<<<<<< HEAD
 typedef struct ValorLexico {
   int linha_token;
   char *valor_token;
   int tipo_token;
 } ValorLexico;
-=======
-/* Estrutura para representar um valor_lexico. */
-typedef struct valor_lexico {
-	int numero_linha;
-	int tipo_token;
-	char *valor_token;
-} valor_lexico;
->>>>>>> 8e84f91 (asome functions added and changes in parser. not working.)
 
 /* Estrutura para representar um nodo da árvore. */
 typedef struct Nodo {
-  struct valor_lexico *info;
+  struct ValorLexico *info;
   struct Nodo** filho;
   int numeroFilhos;
 } Nodo ;
 
 /* Função para criar um novo nó da árvore. */
-Nodo* criaNodo(valor_lexico* info);
+Nodo* criaNodo(ValorLexico* info);
 
 /* Função para adicionar um filho a um nó. */
 void adicionaNodo(Nodo* pai, Nodo* filho);
