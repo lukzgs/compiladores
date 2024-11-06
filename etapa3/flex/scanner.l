@@ -1,4 +1,3 @@
-
 /* Lucas Guaitanelli da Silveira - 208695 */
 /* Vithor Barros Pileco - 326674 */
 
@@ -30,10 +29,26 @@
 
 "!"|"*"|"/"|"%"|"+"|"-"|"<"|">"|"{"|"}"|"("|")"|"="|","|";" { return yytext[0]; }
 
-([a-z]|_)([a-z]|[0-9]|_)* 	{ yylval.valor_lexico.line = yylineno; yylval.valor_lexico.type = IDENTIFICADOR; yylval.valor_lexico.valor = strdup(yytext); return TK_IDENTIFICADOR; }
+([a-z]|_)([a-z]|[0-9]|_)* 	{ 
+  yylval.valor_lexico.line = yylineno; 
+  yylval.valor_lexico.type = IDENTIFICADOR; 
+  yylval.valor_lexico.valor = strdup(yytext); 
+  return TK_IDENTIFICADOR; 
+}
 
-[0-9]+ { yylval.valor_lexico.line = yylineno; yylval.valor_lexico.type = LITERAL; yylval.valor_lexico.valor = strdup(yytext); return TK_LIT_INT; }
-[0-9]*\.[0-9]+ { yylval.valor_lexico.line = yylineno; yylval.valor_lexico.type = LITERAL; yylval.valor_lexico.valor = strdup(yytext); return TK_LIT_FLOAT; }
+[0-9]+ { 
+  yylval.valor_lexico.line = yylineno; 
+  yylval.valor_lexico.type = LITERAL; 
+  yylval.valor_lexico.valor = strdup(yytext); 
+  return TK_LIT_INT; 
+}
+
+[0-9]*\.[0-9]+ { 
+  yylval.valor_lexico.line = yylineno; 
+  yylval.valor_lexico.type = LITERAL; 
+  yylval.valor_lexico.valor = strdup(yytext); 
+  return TK_LIT_FLOAT; 
+}
 
 . { return TK_ERRO; }
 
