@@ -11,9 +11,9 @@
 %%
 
 \/\/.* { }
-[[:space:]]+   { }
+[[:space:]]+ { }
 
-"int" {return TK_PR_INT; }
+"int" { return TK_PR_INT; }
 "float" { return TK_PR_FLOAT; }
 "if" { return TK_PR_IF; }
 "else" { return TK_PR_ELSE; }
@@ -29,25 +29,25 @@
 
 "!"|"*"|"/"|"%"|"+"|"-"|"<"|">"|"{"|"}"|"("|")"|"="|","|";" { return yytext[0]; }
 
-([a-z]|_)([a-z]|[0-9]|_)* 	{ 
-  yylval.valor_lexico.line = yylineno; 
-  yylval.valor_lexico.type = IDENTIFICADOR; 
-  yylval.valor_lexico.valor = strdup(yytext); 
-  return TK_IDENTIFICADOR; 
+([a-z]|_)([a-z]|[0-9]|_)* {
+  yylval.valor_lexico.line = yylineno;
+  yylval.valor_lexico.type = IDENTIFICADOR;
+  yylval.valor_lexico.valor = strdup(yytext);
+  return TK_IDENTIFICADOR;
 }
 
 [0-9]+ { 
-  yylval.valor_lexico.line = yylineno; 
-  yylval.valor_lexico.type = LITERAL; 
-  yylval.valor_lexico.valor = strdup(yytext); 
-  return TK_LIT_INT; 
+  yylval.valor_lexico.line = yylineno;
+  yylval.valor_lexico.type = LITERAL;
+  yylval.valor_lexico.valor = strdup(yytext);
+  return TK_LIT_INT;
 }
 
 [0-9]*\.[0-9]+ { 
-  yylval.valor_lexico.line = yylineno; 
-  yylval.valor_lexico.type = LITERAL; 
-  yylval.valor_lexico.valor = strdup(yytext); 
-  return TK_LIT_FLOAT; 
+  yylval.valor_lexico.line = yylineno;
+  yylval.valor_lexico.type = LITERAL;
+  yylval.valor_lexico.valor = strdup(yytext);
+  return TK_LIT_FLOAT;
 }
 
 . { return TK_ERRO; }
