@@ -1,3 +1,6 @@
+/* Lucas Guaitanelli da Silveira - 208695 */
+/* Vithor Barros Pileco - 326674 */
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
