@@ -1,2 +1,6 @@
 *.tgz
 .vscode
+*/build/
+*parser.tab.h
+*etapa*
+!etapa*/
