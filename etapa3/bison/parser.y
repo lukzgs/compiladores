@@ -136,12 +136,29 @@ lista_comandos:
     } 
     else $$ = $2; 
   }; |
+  declaracao_variavel ';' lista_comandos  { 
+    if ($1 != NULL) {
+      $$ = $1; 
+      if ($1->number_of_children == 3){
+    	  asd_tree_t* p = $1->children[2];
+    	  while (p->number_of_children == 3){
+    	    p = p->children[2];
+    	  }
+    	  asd_add_child(p, $3); 
+      }
+      else {
+        asd_add_child($$, $3);
+      }
+    } else {
+      $$ = $3;
+    }
+  }; |
   /* vazio */ { $$ = NULL; };
+
 
 
 /* comandos */
 comando_simples:	
-  declaracao_variavel ';' { $$ = $1; } |
   atribuicao ';' { $$ = $1; } |
   fluxo_controle ';' { $$ = $1; } |
   retorno ';' { $$ = $1; } |
