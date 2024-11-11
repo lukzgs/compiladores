@@ -1,9 +1,11 @@
-# INF01147 - Compiladores
+# INF01147 - Compiladores - 2024/2
 ## Grupo G
 
 
 Para rodar, basta abrir o terminal na pasta onde a etapa se encontra e digitar 
 > $ make
+
+Dentro de cada etapa, existe um arquivo chamado eX_avaliacao.zip onde se encontram todos os reports do professor.
 
 ### Notas
 - EX.O: resultado dos testes objetivos
