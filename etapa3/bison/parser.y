@@ -54,6 +54,7 @@ extern void *arvore;
 %type<nodo> bloco_comandos
 %type<nodo> lista_comandos
 %type<nodo> comando_simples
+%type<nodo> comandos_unica_linha
 %type<nodo> declaracao_variavel
 %type<nodo> lista_identificadores
 %type<nodo> variavel
@@ -136,19 +137,10 @@ lista_comandos:
     } 
     else $$ = $2; 
   }; |
-  declaracao_variavel ';' lista_comandos  { 
+  comandos_unica_linha ';' lista_comandos  { 
     if ($1 != NULL) {
       $$ = $1; 
-      if ($1->number_of_children == 3){
-    	  asd_tree_t* p = $1->children[2];
-    	  while (p->number_of_children == 3){
-    	    p = p->children[2];
-    	  }
-    	  asd_add_child(p, $3); 
-      }
-      else {
-        asd_add_child($$, $3);
-      }
+      asd_add_child($$->last_node, $3); 
     } else {
       $$ = $3;
     }
@@ -166,16 +158,27 @@ comando_simples:
   chamada_funcao ';' { $$ = $1; } ;
 
 
+comandos_unica_linha:
+  declaracao_variavel
+  /* Para expansão futura */
+  
 /* declaração de var */
 declaracao_variavel:	
   tipo lista_identificadores { $$ = $2; };
 lista_identificadores: 
-  variavel { $$ = $1; } |
+  variavel { 
+    $$ = $1;
+    if ($1 != NULL) $1->last_node = $1;    
+  } |
   variavel ',' lista_identificadores { 
     if($1 != NULL){
-      $$ = $1; 
-      if ($3 != NULL)
+      $$ = $1;
+      if ($3 != NULL){
         asd_add_child($$, $3);
+        $1->last_node = $3->last_node; 
+      } else {
+        $1->last_node = $1; 
+      }
     }
     else $$ = $3;
   };

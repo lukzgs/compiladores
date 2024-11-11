@@ -8,6 +8,7 @@ typedef struct asd_tree {
   char *label;
   int number_of_children;
   struct asd_tree **children;
+  struct asd_tree *last_node; 
 } asd_tree_t;
 
 enum type {
