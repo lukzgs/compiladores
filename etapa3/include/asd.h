@@ -16,8 +16,7 @@ enum type {
   LITERAL = 2
 };
 
-struct valor_token
-{
+struct valor_token {
   int line; 
   enum type type;
   char* valor; 

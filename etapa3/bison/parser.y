@@ -18,7 +18,7 @@ extern void *arvore;
 %}
 
 %code requires{
-    #include "asd.h"
+  #include "asd.h"
 }
 
 %union {
@@ -91,13 +91,13 @@ extern void *arvore;
 
 /* programa */
 programa:
-  lista_funcao { $$=$1; arvore = $$; } |
-  /* vazio */ { $$=NULL; arvore=$$; };
+  lista_funcao { $$ = $1; arvore = $$; } |
+  /* vazio */ { $$ = NULL; arvore=$$; };
 
 lista_funcao:
   funcao lista_funcao {
-      $$ = $1;
-      asd_add_child($$, $2);
+    $$ = $1;
+    asd_add_child($$, $2);
   } |
   funcao { $$ = $1; };
 
