@@ -140,7 +140,8 @@ lista_comandos:
   comandos_unica_linha ';' lista_comandos  { 
     if ($1 != NULL) {
       $$ = $1; 
-      asd_add_child($$->last_node, $3); 
+      if ($3 != NULL)
+        asd_add_child($$->last_node, $3); 
     } else {
       $$ = $3;
     }
