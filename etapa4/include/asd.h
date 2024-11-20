@@ -4,12 +4,6 @@
 #ifndef _ARVORE_H_
 #define _ARVORE_H_
 
-typedef struct asd_tree {
-  char *label;
-  int number_of_children;
-  struct asd_tree **children;
-  struct asd_tree *last_node; 
-} asd_tree_t;
 
 enum type {
   IDENTIFICADOR = 1,
@@ -22,10 +16,24 @@ struct valor_token {
   char* valor; 
 };
 
+typedef struct asd_tree {
+  char *label;
+  int number_of_children;
+  struct asd_tree **children;
+  struct asd_tree *last_node; 
+  struct valor_token * token; 
+} asd_tree_t;
+
+
 /*
  * Função asd_new, cria um nó sem filhos com o label informado.
  */
 asd_tree_t *asd_new(const char *label);
+
+/*
+ * Função asd_new, cria um nó sem filhos com o label informado e o valor_token armazenado no nodo.
+ */
+asd_tree_t *asd_new_token(const char *label, struct valor_token * token);
 
 /*
  * Função asd_tree, libera recursivamente o nó e seus filhos.

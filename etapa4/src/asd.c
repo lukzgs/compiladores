@@ -15,6 +15,20 @@ asd_tree_t *asd_new(const char *label)
     ret->label = strdup(label);
     ret->number_of_children = 0;
     ret->children = NULL;
+    ret->token = NULL; 
+  }
+  return ret;
+}
+
+asd_tree_t *asd_new_token(const char *label, struct valor_token * token)
+{
+  asd_tree_t *ret = NULL;
+  ret = calloc(1, sizeof(asd_tree_t));
+  if (ret != NULL){
+    ret->label = strdup(label);
+    ret->number_of_children = 0;
+    ret->children = NULL;
+    ret->token = token; 
   }
   return ret;
 }
@@ -28,6 +42,7 @@ void asd_free(asd_tree_t *tree)
     }
     free(tree->children);
     free(tree->label);
+    if (tree->token != NULL) free(tree->token); 
     free(tree);
   }
 }

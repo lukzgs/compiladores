@@ -25,7 +25,7 @@ extern table_symbol *current_table;
 }
 
 %union {
-  struct valor_token valor_lexico;
+  struct valor_token * valor_lexico;
   asd_tree_t *nodo;
 }
 
@@ -355,11 +355,11 @@ operadores:
 
 
 identificador:
-  TK_IDENTIFICADOR { $$ = asd_new($1.valor); };
+  TK_IDENTIFICADOR { $$ = asd_new_token($1->valor, $1); };
 
 literal: 
-  TK_LIT_INT { $$ = asd_new($1.valor); } |
-  TK_LIT_FLOAT { $$ = asd_new($1.valor); };
+  TK_LIT_INT { $$ = asd_new_token($1->valor, $1); } |
+  TK_LIT_FLOAT { $$ = asd_new_token($1->valor, $1); };
 %%
 
 void yyerror(char const *s) {
