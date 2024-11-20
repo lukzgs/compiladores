@@ -1,4 +1,4 @@
-ETAPA=etapa3
+ETAPA=etapa4
 IDIR=include
 CC=gcc
 CFLAGS=-I$(IDIR)
@@ -15,7 +15,7 @@ _BISON_SRC=build/parser.tab.c
 _BISON_HEADER=include/parser.tab.h
 _BISON_FILE=bison/parser.y
 
-_OBJ= lex.yy.o parser.tab.o main.o asd.o
+_OBJ= lex.yy.o parser.tab.o main.o asd.o table_sym.o
 OBJ=$(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(_FLEX_SRC): $(_FLEX_FILE) $(_BISON_HEADER)

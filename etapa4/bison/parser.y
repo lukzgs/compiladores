@@ -6,10 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "table_sym.h"
 
 int yylex(void);
 void yyerror (char const *mensagem);
 extern void *arvore;
+extern table_symbol *current_table; 
 
 %}
 
@@ -18,6 +20,7 @@ extern void *arvore;
 %}
 
 %code requires{
+    #include "table_sym.h"
     #include "asd.h"
 }
 
@@ -52,6 +55,7 @@ extern void *arvore;
 %type<nodo> cabecalho
 %type<nodo> corpo
 %type<nodo> bloco_comandos
+%type<nodo> bloco_comandos_funcao
 %type<nodo> lista_comandos
 %type<nodo> comando_simples
 %type<nodo> comandos_unica_linha
@@ -109,9 +113,9 @@ funcao: cabecalho corpo {
 };
 
 cabecalho: 
-  identificador '=' lista_parametros_ou_vazio '>' tipo { $$ = $1; }; 
+  identificador '=' empilha_tabela lista_parametros_ou_vazio '>' tipo { $$ = $1; }; 
 corpo: 
-  bloco_comandos { $$ = $1; };
+  bloco_comandos_funcao desempilha_tabela { $$ = $1; };
 
 tipo:
   TK_PR_INT |
@@ -125,8 +129,15 @@ lista_parametros:
 parametro:
   identificador '<' '-' tipo;
 
-bloco_comandos:	
+bloco_comandos_funcao:	
   '{' lista_comandos '}' { $$ = $2; };
+
+bloco_comandos:	
+  empilha_tabela '{' lista_comandos '}' desempilha_tabela { $$ = $3; };
+
+empilha_tabela: { current_table = table_add_table(current_table, table_new());}; 
+desempilha_tabela: {current_table = table_free(current_table);};
+
 
 lista_comandos:	
   comando_simples lista_comandos {

@@ -6,7 +6,7 @@
 
 typedef enum symbol_kind {
     FUNCTION, 
-    IDENTIFIER
+    VARIABLE
 } symbol_kind;
 
 typedef enum symbol_type {
@@ -29,6 +29,7 @@ typedef struct table_symbol {
     row_symbol* first_row; 
     row_symbol* last_row; 
     struct table_symbol* next_table;
+    struct table_symbol* previous_table;
 } table_symbol; 
 
 
@@ -38,14 +39,14 @@ typedef struct table_symbol {
 row_symbol *new_row(int line, symbol_type type, symbol_kind kind, char *value);
 
 /*
- * Função new_table, cria uma nova tabela 
+ * Função table_new, cria uma nova tabela 
  */
-table_symbol *new_table(row_symbol *first_row);
+table_symbol *table_new();
 
 /*
- * Função table_free, libera recursivamente a tabela 
+ * Função table_free, libera a tabela atual. Dá erro se ela tiver filho. Retorna a tabela anterior a tabela que foi liberada. 
  */
-void table_free(table_symbol *row);
+table_symbol * table_free(table_symbol *row);
 
 /*
  * Função table_add_row, adiciona uma row na tabela
@@ -53,10 +54,9 @@ void table_free(table_symbol *row);
 void table_add_row(table_symbol *table, row_symbol *next_row);
 
 /*
- * Função table_add_row, adiciona uma row na tabela
+ * Função table_add_table, adiciona uma tabela na pilha, retorna a ultima tabela 
  */
-void table_add_table(table_symbol *table, table_symbol *next_table);
-
+table_symbol* table_add_table(table_symbol *table, table_symbol *next_table);
 
 /*
  * Função table_print, imprime recursivamente a tabela.

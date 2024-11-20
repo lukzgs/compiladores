@@ -10,7 +10,7 @@
 row_symbol *new_row(int line, symbol_type type, symbol_kind kind, char *value)
 {
   row_symbol *ret = NULL;
-  ret = calloc(1, sizeof(row_symbol));
+  ret = malloc(sizeof(row_symbol));
   if (ret != NULL){
     ret->value = strdup(value);
     ret->line = line;
@@ -22,28 +22,37 @@ row_symbol *new_row(int line, symbol_type type, symbol_kind kind, char *value)
   return ret;
 }
 
-table_symbol *new_table(){
+table_symbol *table_new(){
   table_symbol *ret = NULL;
   ret = calloc(1, sizeof(table_symbol));
   if (ret != NULL){
       ret->first_row = NULL;
       ret->last_row = NULL;
       ret->next_table = NULL;
+      ret->previous_table = NULL;
   }
   return ret; 
 }
 
-void table_free(table_symbol *table){
+table_symbol *table_free(table_symbol *table){
   if (table != NULL){
-    table_free(table->next_table); 
-    row_symbol *row = table->first_row; 
-    while (row != NULL){
-      row_symbol* next = row->next_row; 
-      free(row->value); 
-      free(row); 
-      row = next; 
+    if (table->next_table == NULL){
+      table_symbol *previous_table = table->previous_table; 
+      row_symbol *row = table->first_row; 
+      while (row != NULL){
+        row_symbol* next = row->next_row; 
+        free(row->value); 
+        free(row); 
+        row = next; 
+      }
+      free(table); 
+      if (previous_table != NULL) previous_table->next_table = NULL; 
+      return previous_table; 
+    } else {
+      printf("Erro: %s recebeu parâmetro table que possui outra table como filho = %p / %p.\n", __FUNCTION__, table, table->next_table);
+      exit(1); 
     }
-    free(table); 
+    return NULL; 
   }
 }
 
@@ -63,16 +72,17 @@ void table_add_row(table_symbol *table, row_symbol *next_row)
   }
 }
 
-
-
-void table_add_table(table_symbol *table, table_symbol *next_table){
+table_symbol* table_add_table(table_symbol *table, table_symbol *next_table){
   if (table != NULL) {
     while (table->next_table != NULL){
       table = table->next_table; 
     }
     table->next_table = next_table; 
+    next_table->previous_table = table; 
+    return next_table; 
   } else {
     printf("Erro: %s recebeu parâmetro table = %p.\n", __FUNCTION__, table);
+    return NULL; 
   }
 }
 
@@ -82,7 +92,7 @@ void table_print(table_symbol *table)
   if (table != NULL) {
     row_symbol* row = table->first_row; 
     while (row != NULL){
-      printf("%04d | %04d | %04d | %s", row->line, row->kind, row->type, row->value); 
+      printf("%04d | %04d | %04d | %s\n", row->line, row->kind, row->type, row->value); 
       row = row->next_row; 
     }
   }else{
