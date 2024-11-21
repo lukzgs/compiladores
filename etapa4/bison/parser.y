@@ -27,6 +27,7 @@ extern table_symbol *current_table;
 %union {
   struct valor_token * valor_lexico;
   asd_tree_t *nodo;
+  symbol_type info_type; 
 }
 
 %define parse.error verbose
@@ -63,6 +64,7 @@ extern table_symbol *current_table;
 %type<nodo> lista_identificadores
 %type<nodo> variavel
 %type<nodo> literal
+%type<info_type> tipo
 %type<nodo> atribuicao
 %type<nodo> chamada_funcao
 %type<nodo> lista_expressoes
@@ -80,7 +82,7 @@ extern table_symbol *current_table;
 %type<nodo> expressao_multiplicacao
 %type<nodo> expressao_unarias
 %type<nodo> expressao_paranteses
-%type<nodo> operadores
+%type<nodo> operandos
 %type<nodo> operadores_unarios
 %type<nodo> operadores_multiplicacao
 %type<nodo> operadores_soma
@@ -113,13 +115,18 @@ funcao: cabecalho corpo {
 };
 
 cabecalho: 
-  identificador '=' empilha_tabela lista_parametros_ou_vazio '>' tipo { $$ = $1; }; 
+  identificador '=' empilha_tabela lista_parametros_ou_vazio '>' tipo 
+  { 
+    $$ = $1;
+    table_add_row(get_first_table(current_table), new_row($1->token->line, $6 , FUNCTION, $1->label));
+  
+   }; 
 corpo: 
   bloco_comandos_funcao desempilha_tabela { $$ = $1; };
 
 tipo:
-  TK_PR_INT |
-  TK_PR_FLOAT;
+  TK_PR_INT  { $$ = INT; } |
+  TK_PR_FLOAT { $$ = FLOAT; };
 lista_parametros_ou_vazio: 
   lista_parametros |
   /* vazio */;
@@ -340,7 +347,7 @@ operadores_unarios:
   '-' { $$ = asd_new("-"); };
 expressao_unarias:
   expressao_paranteses { $$ = $1; } |
-  operadores { $$ = $1; } |
+  operandos { $$ = $1; } |
   operadores_unarios expressao_unarias {
     $$ = $1;
     asd_add_child($$, $2);
@@ -348,7 +355,7 @@ expressao_unarias:
 
 expressao_paranteses:
   '(' expressao ')' { $$ = $2; };
-operadores:
+operandos:
   identificador { $$ = $1; } |
   literal { $$ = $1; } |
   chamada_funcao { $$ = $1; };

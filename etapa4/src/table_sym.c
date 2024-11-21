@@ -72,6 +72,13 @@ void table_add_row(table_symbol *table, row_symbol *next_row)
   }
 }
 
+table_symbol *get_first_table(table_symbol * table){
+  while (table->previous_table != NULL){
+    table = table->previous_table; 
+  }
+  return table; 
+}
+
 table_symbol* table_add_table(table_symbol *table, table_symbol *next_table){
   if (table != NULL) {
     while (table->next_table != NULL){

@@ -34,6 +34,10 @@ typedef struct table_symbol {
 
 
 /*
+    Pega a primeira tabela da pilha 
+*/
+table_symbol *get_first_table(table_symbol * table);
+/*
  * Função new_row, cria uma nova linha 
  */
 row_symbol *new_row(int line, symbol_type type, symbol_kind kind, char *value);
