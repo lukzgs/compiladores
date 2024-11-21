@@ -134,7 +134,7 @@ lista_parametros:
   parametro TK_OC_OR lista_parametros |
   parametro;
 parametro:
-  identificador '<' '-' tipo;
+  identificador '<' '-' tipo { table_add_row(current_table, new_row($1->token->line, $4, VARIABLE, $1->label));};
 
 bloco_comandos_funcao:	
   '{' lista_comandos '}' { $$ = $2; };
@@ -143,7 +143,7 @@ bloco_comandos:
   empilha_tabela '{' lista_comandos '}' desempilha_tabela { $$ = $3; };
 
 empilha_tabela: { current_table = table_add_table(current_table, table_new());}; 
-desempilha_tabela: {current_table = table_free(current_table);};
+desempilha_tabela: {table_print(current_table); current_table = table_free(current_table);};
 
 
 lista_comandos:	
@@ -183,7 +183,7 @@ comandos_unica_linha:
   
 /* declaração de var */
 declaracao_variavel:	
-  tipo lista_identificadores { $$ = $2; };
+  tipo lista_identificadores { $$ = $2; table_fill_type(current_table, $1); };
 lista_identificadores: 
   variavel { 
     $$ = $1;
@@ -202,11 +202,12 @@ lista_identificadores:
     else $$ = $3;
   };
 variavel: 
-  identificador { $$ = NULL; } |
+  identificador { $$ = NULL; table_add_row(current_table, new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label)); } |
   identificador TK_OC_LE literal { 
     $$ = asd_new("<="); 
     asd_add_child($$, $1);
     asd_add_child($$, $3);
+    table_add_row(current_table, new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label));
   };
 
 

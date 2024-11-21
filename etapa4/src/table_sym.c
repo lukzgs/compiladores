@@ -22,6 +22,16 @@ row_symbol *new_row(int line, symbol_type type, symbol_kind kind, char *value)
   return ret;
 }
 
+void table_fill_type(table_symbol * table, symbol_type type){
+  row_symbol *row = table->first_row;
+  while (row != NULL){
+    if (row->type == NULL_TYPE) {
+      row->type = type;
+    } 
+    row = row->next_row; 
+  }
+}
+
 table_symbol *table_new(){
   table_symbol *ret = NULL;
   ret = calloc(1, sizeof(table_symbol));

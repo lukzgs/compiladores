@@ -10,8 +10,9 @@ typedef enum symbol_kind {
 } symbol_kind;
 
 typedef enum symbol_type {
+    NULL_TYPE, 
     FLOAT, 
-    INT 
+    INT
 } symbol_type; 
 
 
@@ -31,6 +32,12 @@ typedef struct table_symbol {
     struct table_symbol* next_table;
     struct table_symbol* previous_table;
 } table_symbol; 
+
+
+/*
+    Preenche as linhas da tabela com tipo nulo com o tipo informado
+*/
+void table_fill_type(table_symbol * table, symbol_type type);
 
 
 /*
