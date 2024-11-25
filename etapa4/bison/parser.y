@@ -16,12 +16,12 @@ extern table_symbol *current_table;
 %}
 
 %{
-    extern int yylineno;
+  extern int yylineno;
 %}
 
-%code requires{
-    #include "table_sym.h"
-    #include "asd.h"
+%code requires {
+  #include "table_sym.h"
+  #include "asd.h"
 }
 
 %union {
@@ -109,18 +109,20 @@ lista_funcao:
 
 
 /* funcao */
-funcao: cabecalho corpo {
+funcao: 
+  cabecalho corpo {
   if ($2 != NULL)
     asd_add_child($1, $2);
-};
+  };
 
 cabecalho: 
-  identificador '=' empilha_tabela lista_parametros_ou_vazio '>' tipo 
-  { 
+  identificador '=' empilha_tabela lista_parametros_ou_vazio '>' tipo { 
     $$ = $1;
-    table_add_row(get_first_table(current_table), new_row($1->token->line, $6 , FUNCTION, $1->label));
-  
-   }; 
+    table_add_row(
+      get_first_table(current_table), 
+      new_row($1->token->line, $6 , FUNCTION, $1->label)
+    );  
+  }; 
 corpo: 
   bloco_comandos_funcao desempilha_tabela { $$ = $1; };
 
@@ -134,7 +136,12 @@ lista_parametros:
   parametro TK_OC_OR lista_parametros |
   parametro;
 parametro:
-  identificador '<' '-' tipo { table_add_row(current_table, new_row($1->token->line, $4, VARIABLE, $1->label));};
+  identificador '<' '-' tipo {
+    table_add_row(
+      current_table, 
+      new_row($1->token->line, $4, VARIABLE, $1->label)
+    );
+  };
 
 bloco_comandos_funcao:	
   '{' lista_comandos '}' { $$ = $2; };
@@ -142,9 +149,13 @@ bloco_comandos_funcao:
 bloco_comandos:	
   empilha_tabela '{' lista_comandos '}' desempilha_tabela { $$ = $3; };
 
-empilha_tabela: { current_table = table_add_table(current_table, table_new());}; 
-desempilha_tabela: {table_print(current_table); current_table = table_free(current_table);};
-
+empilha_tabela: { 
+  current_table = table_add_table(current_table, table_new());
+};
+desempilha_tabela: { 
+  table_print(current_table);
+  current_table = table_free(current_table);
+};
 
 lista_comandos:	
   comando_simples lista_comandos {
@@ -152,7 +163,7 @@ lista_comandos:
       $$ = $1; 
       if ($2 != NULL)
         asd_add_child($$, $2);
-    } 
+    }
     else $$ = $2; 
   }; |
   comandos_unica_linha ';' lista_comandos  { 
@@ -202,12 +213,21 @@ lista_identificadores:
     else $$ = $3;
   };
 variavel: 
-  identificador { $$ = NULL; table_add_row(current_table, new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label)); } |
+  identificador { 
+    $$ = NULL; 
+    table_add_row(
+      current_table, 
+      new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label)
+    );
+  } |
   identificador TK_OC_LE literal { 
     $$ = asd_new("<="); 
     asd_add_child($$, $1);
     asd_add_child($$, $3);
-    table_add_row(current_table, new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label));
+    table_add_row(
+      current_table, 
+      new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label)
+    );
   };
 
 
@@ -229,7 +249,8 @@ chamada_funcao:
     strcat(name, $1->label);
     $$ = asd_new(name);
     asd_add_child($$, $3);
-  };  
+  };
+
 lista_expressoes:	
   expressao  { $$ = $1; } |
   expressao ',' lista_expressoes { 
