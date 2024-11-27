@@ -219,6 +219,7 @@ atribuicao:
     $$ = asd_new("=");
     asd_add_child($$, $1); 
     asd_add_child($$, $5); 
+    $$->type = get_row_from_stack(current_table, $1->token->valor)->type; 
   };
 
 
@@ -231,6 +232,7 @@ chamada_funcao:
     strcat(name, $1->label);
     $$ = asd_new(name);
     asd_add_child($$, $5);
+    $$->type = get_row_from_stack(current_table, $1->token->valor)->type; 
   };  
 lista_expressoes:	
   expressao  { $$ = $1; } |
@@ -286,6 +288,7 @@ expressao_or:
   expressao_and { $$ = $1; } |
   expressao_or TK_OC_OR expressao_and {
     $$ = asd_new("|");
+    $$->type = infer_type($1->type, $3->type); 
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -294,6 +297,7 @@ expressao_and:
   expressao_igualdade { $$ = $1; } |
   expressao_and TK_OC_AND expressao_igualdade {
     $$ = asd_new("&");
+    $$->type = infer_type($1->type, $3->type); 
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -305,6 +309,7 @@ expressao_igualdade:
   expressao_comparacao { $$ = $1; } |
   expressao_igualdade operadores_igualdade expressao_comparacao {
     $$ = $2;
+    $$->type = infer_type($1->type, $3->type); 
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -318,6 +323,7 @@ expressao_comparacao:
   expressao_soma {$$ = $1;} |
   expressao_comparacao operadores_comparacao expressao_soma {
     $$ = $2;
+    $$->type = infer_type($1->type, $3->type); 
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -329,6 +335,7 @@ expressao_soma:
   expressao_multiplicacao { $$ = $1; } |
   expressao_soma operadores_soma expressao_multiplicacao {
     $$ = $2;
+    $$->type = infer_type($1->type, $3->type); 
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -341,6 +348,7 @@ expressao_multiplicacao:
   expressao_unarias { $$ = $1; } |
   expressao_multiplicacao operadores_multiplicacao expressao_unarias {
     $$ = $2;
+    $$->type = infer_type($1->type, $3->type); 
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -353,13 +361,15 @@ expressao_unarias:
   operandos { $$ = $1; } |
   operadores_unarios expressao_unarias {
     $$ = $1;
+    $$->type = $2->type; 
     asd_add_child($$, $2);
   };
 
 expressao_paranteses:
   '(' expressao ')' { $$ = $2; };
 operandos:
-  identificador variavel_esperada verifica_existencia_e_corretude_identificador { $$ = $1; } |
+  identificador variavel_esperada verifica_existencia_e_corretude_identificador { $$ = $1;     $$->type = get_row_from_stack(current_table, $1->token->valor)->type; 
+ } |
   literal { $$ = $1; } |
   chamada_funcao { $$ = $1; };
 
@@ -394,7 +404,7 @@ verifica_existencia_e_corretude_identificador:
           exit(ERR_FUNCTION); 
         }
       }
-  } ;
+  };
 
 identificador:
   TK_IDENTIFICADOR 
@@ -404,8 +414,8 @@ identificador:
   };
 
 literal: 
-  TK_LIT_INT { $$ = asd_new_token($1->valor, $1); } |
-  TK_LIT_FLOAT { $$ = asd_new_token($1->valor, $1); };
+  TK_LIT_INT { $$ = asd_new_token($1->valor, $1); $$->type = INT;  } |
+  TK_LIT_FLOAT { $$ = asd_new_token($1->valor, $1); $$->type = FLOAT; };
 %%
 
 void yyerror(char const *s) {

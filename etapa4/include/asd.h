@@ -5,6 +5,8 @@
 #define _ARVORE_H_
 
 
+#include "table_sym.h"
+
 enum type {
   IDENTIFICADOR = 1,
   LITERAL = 2
@@ -22,6 +24,7 @@ typedef struct asd_tree {
   struct asd_tree **children;
   struct asd_tree *last_node; 
   struct valor_token * token; 
+  symbol_type type;
 } asd_tree_t;
 
 
@@ -59,4 +62,9 @@ void asd_print_graphviz (asd_tree_t *tree);
  * Função asd_print_export, imprime recursivamente a árvore no formato especificado. 
  */
 void asd_print_export(asd_tree_t *tree);
+
+/*
+ * Função que decide qual tipo deve ser retornado dado os 2 tipos dos operandos e as regras de inferência 
+*/
+symbol_type infer_type(symbol_type type1, symbol_type type2); 
 #endif //_ARVORE_H_
