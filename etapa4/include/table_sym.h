@@ -74,5 +74,15 @@ table_symbol* table_add_table(table_symbol *table, table_symbol *next_table);
  */
 void table_print(table_symbol *tree);
 
+/*
+ * Checa se o identificador já está definido no escopo
+ */
+int is_identifier_declared(table_symbol * table, char * identifier); 
+
+/*
+ * Retorna a Row associada ao identificador passado, retorna NULL caso não exista
+ */
+row_symbol * get_row(table_symbol * table, char * identifier); 
+
 #endif 
 

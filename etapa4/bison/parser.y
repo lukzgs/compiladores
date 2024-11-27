@@ -12,7 +12,7 @@ int yylex(void);
 void yyerror (char const *mensagem);
 extern void *arvore;
 extern table_symbol *current_table; 
-
+char * current_identifier; 
 %}
 
 %{
@@ -22,6 +22,7 @@ extern table_symbol *current_table;
 %code requires{
     #include "table_sym.h"
     #include "asd.h"
+    #include "errors.h"
 }
 
 %union {
@@ -115,10 +116,10 @@ funcao: cabecalho corpo {
 };
 
 cabecalho: 
-  identificador '=' empilha_tabela lista_parametros_ou_vazio '>' tipo 
+  identificador verifica_declaracao_identificador '=' empilha_tabela lista_parametros_ou_vazio '>' tipo 
   { 
     $$ = $1;
-    table_add_row(get_first_table(current_table), new_row($1->token->line, $6 , FUNCTION, $1->label));
+    table_add_row(get_first_table(current_table), new_row($1->token->line, $7 , FUNCTION, $1->label));
   
    }; 
 corpo: 
@@ -134,7 +135,7 @@ lista_parametros:
   parametro TK_OC_OR lista_parametros |
   parametro;
 parametro:
-  identificador '<' '-' tipo { table_add_row(current_table, new_row($1->token->line, $4, VARIABLE, $1->label));};
+  identificador verifica_declaracao_identificador '<' '-' tipo { table_add_row(current_table, new_row($1->token->line, $5, VARIABLE, $1->label));};
 
 bloco_comandos_funcao:	
   '{' lista_comandos '}' { $$ = $2; };
@@ -202,18 +203,18 @@ lista_identificadores:
     else $$ = $3;
   };
 variavel: 
-  identificador { $$ = NULL; table_add_row(current_table, new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label)); } |
-  identificador TK_OC_LE literal { 
+  identificador verifica_declaracao_identificador { $$ = NULL; table_add_row(current_table, new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label)); } |
+  identificador verifica_declaracao_identificador TK_OC_LE literal { 
     $$ = asd_new("<="); 
     asd_add_child($$, $1);
-    asd_add_child($$, $3);
+    asd_add_child($$, $4);
     table_add_row(current_table, new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label));
   };
 
 
 /* atribuição */
 atribuicao:	
-  identificador '=' expressao { 
+  identificador'=' expressao { 
     $$ = asd_new("=");
     asd_add_child($$, $1); 
     asd_add_child($$, $3); 
@@ -361,9 +362,21 @@ operandos:
   literal { $$ = $1; } |
   chamada_funcao { $$ = $1; };
 
+verifica_declaracao_identificador:
+  /* vazia */  
+  {
+    if (is_identifier_declared(current_table, current_identifier)){
+      fprintf(stderr, "Redeclaração  do identificador [%s] detectada na linha [%d], declaração prévia na linha [%d]\n", current_identifier, yylineno, get_row(current_table, current_identifier)->line); 
+      exit(ERR_DECLARED); 
+    }
+  } ;
 
 identificador:
-  TK_IDENTIFICADOR { $$ = asd_new_token($1->valor, $1); };
+  TK_IDENTIFICADOR 
+  { 
+    current_identifier = $1->valor; 
+    $$ = asd_new_token($1->valor, $1); 
+  };
 
 literal: 
   TK_LIT_INT { $$ = asd_new_token($1->valor, $1); } |

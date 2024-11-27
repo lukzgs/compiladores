@@ -117,3 +117,25 @@ void table_print(table_symbol *table)
   }
 }
 
+int is_identifier_declared(table_symbol * table, char * identifier){
+  row_symbol * row = table->first_row; 
+  while (row != NULL){
+    if (!strcmp(row->value, identifier)){
+      return 1; 
+    }
+    row = row->next_row; 
+  }
+  return 0; 
+}
+
+row_symbol * get_row(table_symbol * table, char * identifier){
+    row_symbol * row = table->first_row; 
+  while (row != NULL){
+    if (!strcmp(row->value, identifier)){
+      return row; 
+    }
+    row = row->next_row; 
+  }
+  return NULL; 
+}
+
