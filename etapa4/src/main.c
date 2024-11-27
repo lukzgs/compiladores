@@ -22,7 +22,6 @@ int main (int argc, char **argv)
   // exporta (arvore);
   yylex_destroy();
   asd_free(arvore);
-  table_print(current_table); 
   table_free(current_table); 
   return ret;
 }

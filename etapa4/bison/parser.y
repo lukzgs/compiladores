@@ -13,6 +13,7 @@ void yyerror (char const *mensagem);
 extern void *arvore;
 extern table_symbol *current_table; 
 char * current_identifier; 
+symbol_kind desired_kind; 
 %}
 
 %{
@@ -144,7 +145,7 @@ bloco_comandos:
   empilha_tabela '{' lista_comandos '}' desempilha_tabela { $$ = $3; };
 
 empilha_tabela: { current_table = table_add_table(current_table, table_new());}; 
-desempilha_tabela: {table_print(current_table); current_table = table_free(current_table);};
+desempilha_tabela: {current_table = table_free(current_table);};
 
 
 lista_comandos:	
@@ -214,22 +215,22 @@ variavel:
 
 /* atribuição */
 atribuicao:	
-  identificador verifica_existencia_identificador '=' expressao { 
+  identificador variavel_esperada verifica_existencia_e_corretude_identificador '=' expressao { 
     $$ = asd_new("=");
     asd_add_child($$, $1); 
-    asd_add_child($$, $4); 
+    asd_add_child($$, $5); 
   };
 
 
 /* chamada de função */
 chamada_funcao:
-  identificador verifica_existencia_identificador '(' lista_expressoes ')' { 
+  identificador funcao_esperada verifica_existencia_e_corretude_identificador '(' lista_expressoes ')' { 
     int len = strlen($1->label);
     char name[len + 5];
     strcpy(name, "call ");
     strcat(name, $1->label);
     $$ = asd_new(name);
-    asd_add_child($$, $4);
+    asd_add_child($$, $5);
   };  
 lista_expressoes:	
   expressao  { $$ = $1; } |
@@ -358,7 +359,7 @@ expressao_unarias:
 expressao_paranteses:
   '(' expressao ')' { $$ = $2; };
 operandos:
-  identificador verifica_existencia_identificador { $$ = $1; } |
+  identificador variavel_esperada verifica_existencia_e_corretude_identificador { $$ = $1; } |
   literal { $$ = $1; } |
   chamada_funcao { $$ = $1; };
 
@@ -366,19 +367,34 @@ verifica_declaracao_identificador:
   /* vazia */  
   {
     if (is_identifier_declared(current_table, current_identifier)){
-      fprintf(stderr, "Redeclaração  do identificador [%s] detectada na linha [%d], declaração prévia na linha [%d]\n", current_identifier, yylineno, get_row(current_table, current_identifier)->line); 
+      fprintf(stderr, "Redeclaração  do identificador [%s] detectada na linha [%d], declaração prévia na linha [%d]\n", current_identifier, yylineno, get_row_from_scope(current_table, current_identifier)->line); 
       exit(ERR_DECLARED); 
     }
   };
 
-verifica_existencia_identificador:
+variavel_esperada:
+  /* vazia */  {desired_kind = VARIABLE;}; 
+
+funcao_esperada:
+  /* vazia */  {desired_kind = FUNCTION;}; 
+
+verifica_existencia_e_corretude_identificador:
   /* vazia */ 
   {
       if (!does_identifier_exist(current_table, current_identifier)){
         fprintf(stderr, "Declaração  do identificador [%s] usado na linha [%d] não encontrada\n", current_identifier, yylineno); 
         exit(ERR_UNDECLARED); 
-    }
-  }
+      }
+      row_symbol * row = get_row_from_stack(current_table, current_identifier); 
+      if (row->kind != desired_kind){
+        fprintf(stderr, "Identificador [%s] usado na linha [%d] declarado como [%s] mas usado como [%s]\n", current_identifier, yylineno, get_str_symbol_kind(row->kind), get_str_symbol_kind(desired_kind)); 
+        if (row->kind == VARIABLE){
+          exit(ERR_VARIABLE); 
+        } else if (row->kind == FUNCTION) {
+          exit(ERR_FUNCTION); 
+        }
+      }
+  } ;
 
 identificador:
   TK_IDENTIFICADOR 

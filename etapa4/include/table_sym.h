@@ -85,9 +85,18 @@ int is_identifier_declared(table_symbol * table, char * identifier);
 int does_identifier_exist(table_symbol * current_table, char * identifier); 
 
 /*
- * Retorna a Row associada ao identificador passado, retorna NULL caso não exista
+ * Retorna a row  associada ao identificador passado no escopo atual, retorna NULL caso não exista
  */
-row_symbol * get_row(table_symbol * table, char * identifier); 
+row_symbol * get_row_from_scope(table_symbol * table, char * identifier); 
 
+/*
+ * Retorna a row  associada ao identificador passado em todos os escopos, retorna NULL caso não exista
+ */
+row_symbol * get_row_from_stack(table_symbol * table, char * identifier); 
+
+/*
+ * Transforma enum de symbol_kind em uma string
+ */
+const char* get_str_symbol_kind(symbol_kind kind); 
 #endif 
 

@@ -138,7 +138,19 @@ int does_identifier_exist(table_symbol * current_table, char * identifier){
   return 0; 
 }
 
-row_symbol * get_row(table_symbol * table, char * identifier){
+row_symbol *  get_row_from_stack(table_symbol * current_table, char * identifier){
+  while (current_table != NULL){
+    row_symbol * row = get_row_from_scope(current_table, identifier); 
+    if (row != NULL){
+      return row; 
+    }
+    current_table = current_table->previous_table; 
+  }
+  return NULL; 
+}
+
+
+row_symbol * get_row_from_scope(table_symbol * table, char * identifier){
     row_symbol * row = table->first_row; 
   while (row != NULL){
     if (!strcmp(row->value, identifier)){
@@ -147,5 +159,16 @@ row_symbol * get_row(table_symbol * table, char * identifier){
     row = row->next_row; 
   }
   return NULL; 
+}
+
+const char* get_str_symbol_kind(symbol_kind kind){
+  if (kind == VARIABLE){
+    return "VARIABLE"; 
+  } else if (kind == FUNCTION){
+    return "FUNCTION"; 
+  } else {
+    fprintf(stderr, "Kind unidentified %d\n", kind);
+    exit(1); 
+  }
 }
 
