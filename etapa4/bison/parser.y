@@ -214,22 +214,22 @@ variavel:
 
 /* atribuição */
 atribuicao:	
-  identificador'=' expressao { 
+  identificador verifica_existencia_identificador '=' expressao { 
     $$ = asd_new("=");
     asd_add_child($$, $1); 
-    asd_add_child($$, $3); 
+    asd_add_child($$, $4); 
   };
 
 
 /* chamada de função */
 chamada_funcao:
-  identificador '(' lista_expressoes ')' { 
+  identificador verifica_existencia_identificador '(' lista_expressoes ')' { 
     int len = strlen($1->label);
     char name[len + 5];
     strcpy(name, "call ");
     strcat(name, $1->label);
     $$ = asd_new(name);
-    asd_add_child($$, $3);
+    asd_add_child($$, $4);
   };  
 lista_expressoes:	
   expressao  { $$ = $1; } |
@@ -358,7 +358,7 @@ expressao_unarias:
 expressao_paranteses:
   '(' expressao ')' { $$ = $2; };
 operandos:
-  identificador { $$ = $1; } |
+  identificador verifica_existencia_identificador { $$ = $1; } |
   literal { $$ = $1; } |
   chamada_funcao { $$ = $1; };
 
@@ -369,7 +369,16 @@ verifica_declaracao_identificador:
       fprintf(stderr, "Redeclaração  do identificador [%s] detectada na linha [%d], declaração prévia na linha [%d]\n", current_identifier, yylineno, get_row(current_table, current_identifier)->line); 
       exit(ERR_DECLARED); 
     }
-  } ;
+  };
+
+verifica_existencia_identificador:
+  /* vazia */ 
+  {
+      if (!does_identifier_exist(current_table, current_identifier)){
+        fprintf(stderr, "Declaração  do identificador [%s] usado na linha [%d] não encontrada\n", current_identifier, yylineno); 
+        exit(ERR_UNDECLARED); 
+    }
+  }
 
 identificador:
   TK_IDENTIFICADOR 

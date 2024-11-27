@@ -80,6 +80,11 @@ void table_print(table_symbol *tree);
 int is_identifier_declared(table_symbol * table, char * identifier); 
 
 /*
+ * Checa se o identificador já está definido na pilha de escopos
+ */
+int does_identifier_exist(table_symbol * current_table, char * identifier); 
+
+/*
  * Retorna a Row associada ao identificador passado, retorna NULL caso não exista
  */
 row_symbol * get_row(table_symbol * table, char * identifier); 

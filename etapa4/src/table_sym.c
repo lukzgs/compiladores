@@ -128,6 +128,16 @@ int is_identifier_declared(table_symbol * table, char * identifier){
   return 0; 
 }
 
+int does_identifier_exist(table_symbol * current_table, char * identifier){
+  while (current_table != NULL){
+    if (is_identifier_declared(current_table, identifier)){
+      return 1; 
+    }
+    current_table = current_table->previous_table; 
+  }
+  return 0; 
+}
+
 row_symbol * get_row(table_symbol * table, char * identifier){
     row_symbol * row = table->first_row; 
   while (row != NULL){
