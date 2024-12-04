@@ -122,15 +122,15 @@ cabecalho:
     $$ = $1;
     table_add_row(
       get_first_table(current_table), new_row($1->token->line, $7 , FUNCTION, $1->label)
-    );  
-   }; 
-corpo: 
+    );
+   };
+corpo:
   bloco_comandos_funcao desempilha_tabela { $$ = $1; };
 
 tipo:
   TK_PR_INT  { $$ = INT; } |
   TK_PR_FLOAT { $$ = FLOAT; };
-lista_parametros_ou_vazio: 
+lista_parametros_ou_vazio:
   lista_parametros |
   /* vazio */;
 lista_parametros:
@@ -143,13 +143,13 @@ parametro:
     );
   };
 
-bloco_comandos_funcao:	
+bloco_comandos_funcao:
   '{' lista_comandos '}' { $$ = $2; };
 
-bloco_comandos:	
+bloco_comandos:
   empilha_tabela '{' lista_comandos '}' desempilha_tabela { $$ = $3; };
 
-empilha_tabela: { 
+empilha_tabela: {
   current_table = table_add_table(current_table, table_new());
 }; 
 desempilha_tabela: {
@@ -157,18 +157,18 @@ desempilha_tabela: {
 };
 
 
-lista_comandos:	
+lista_comandos:
   comando_simples lista_comandos {
     if ($1 != NULL) {
       $$ = $1; 
       if ($2 != NULL)
         asd_add_child($$, $2);
     } 
-    else $$ = $2; 
+    else $$ = $2;
   }; |
-  comandos_unica_linha ';' lista_comandos  { 
+  comandos_unica_linha ';' lista_comandos  {
     if ($1 != NULL) {
-      $$ = $1; 
+      $$ = $1;
       if ($3 != NULL)
         asd_add_child($$->last_node, $3); 
     } else {
@@ -180,7 +180,7 @@ lista_comandos:
 
 
 /* comandos */
-comando_simples:	
+comando_simples:
   atribuicao ';' { $$ = $1; } |
   fluxo_controle ';' { $$ = $1; } |
   retorno ';' { $$ = $1; } |
@@ -209,22 +209,22 @@ lista_identificadores:
       $$ = $1;
       if ($3 != NULL) {
         asd_add_child($$, $3);
-        $1->last_node = $3->last_node; 
+        $1->last_node = $3->last_node;
       } else { 
-        $1->last_node = $1; 
+        $1->last_node = $1;
       }
     }
     else $$ = $3;
   };
 variavel: 
-  identificador verifica_declaracao_identificador { 
+  identificador verifica_declaracao_identificador {
     $$ = NULL; 
     table_add_row(
-      current_table, 
+      current_table,
       new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label)
     ); 
   } |
-  identificador verifica_declaracao_identificador TK_OC_LE literal { 
+  identificador verifica_declaracao_identificador TK_OC_LE literal {
     $$ = asd_new("<="); 
     asd_add_child($$, $1);
     asd_add_child($$, $4);
@@ -236,34 +236,34 @@ variavel:
 
 
 /* atribuição */
-atribuicao:	
-  identificador variavel_esperada verifica_existencia_e_corretude_identificador '=' expressao { 
+atribuicao:
+  identificador variavel_esperada verifica_existencia_e_corretude_identificador '=' expressao {
     $$ = asd_new("=");
-    asd_add_child($$, $1); 
-    asd_add_child($$, $5); 
+    asd_add_child($$, $1);
+    asd_add_child($$, $5);
   };
 
 
 /* chamada de função */
 chamada_funcao:
-  identificador funcao_esperada verifica_existencia_e_corretude_identificador '(' lista_expressoes ')' { 
+  identificador funcao_esperada verifica_existencia_e_corretude_identificador '(' lista_expressoes ')' {
     int len = strlen($1->label);
     char name[len + 5];
     strcpy(name, "call");
     strcat(name, $1->label);
     $$ = asd_new(name);
     asd_add_child($$, $5);
-  };  
-lista_expressoes:	
+  };
+lista_expressoes:
   expressao  { $$ = $1; } |
   expressao ',' lista_expressoes { 
-    $$ = $1; 
+    $$ = $1;
     asd_add_child($$, $3);
   };
 
 
 /* controle de fluxo */
-fluxo_controle: 
+fluxo_controle:
   condicional_if { $$ = $1; } |
   iterativo { $$ = $1; };
 
@@ -277,7 +277,7 @@ retorno:
 
 
 /* condicional */
-condicional_if: 
+condicional_if:
   TK_PR_IF '(' expressao ')' bloco_comandos else_opcional {
     $$ = asd_new("if");
     asd_add_child($$, $3);
@@ -388,37 +388,40 @@ operandos:
 verifica_declaracao_identificador:
   /* vazio */ {
     if (is_identifier_declared(current_table, current_identifier)) {
-      fprintf(stderr, "Redeclaração  do identificador [%s] detectada na linha [%d], declaração prévia na linha [%d]\n", current_identifier, yylineno, get_row_from_scope(current_table, current_identifier)->line); 
-      exit(ERR_DECLARED); 
+      fprintf(stderr, "Redeclaração  do identificador [%s] detectada na linha [%d], declaração prévia na linha [%d]\n", current_identifier, yylineno, get_row_from_scope(current_table, current_identifier)->line);
+      exit(ERR_DECLARED);
     }
   };
 
 variavel_esperada:
-  /* vazio */  { desired_kind = VARIABLE; }; 
+  /* vazio */ { desired_kind = VARIABLE; };
 
 funcao_esperada:
-  /* vazio */  { desired_kind = FUNCTION; }; 
+  /* vazio */ { desired_kind = FUNCTION; };
 
-verifica_existencia_e_corretude_identificador: /* vazio */  {
-      if (!does_identifier_exist(current_table, current_identifier)) {
-        fprintf(stderr, "Declaração  do identificador [%s] usado na linha [%d] não encontrada\n", current_identifier, yylineno); 
-        exit(ERR_UNDECLARED); 
+verifica_existencia_e_corretude_identificador: 
+  /* vazio */ {
+    if (!does_identifier_exist(current_table, current_identifier)) {
+      fprintf(stderr, "Declaração  do identificador [%s] usado na linha [%d] não encontrada\n", current_identifier, yylineno);
+      exit(ERR_UNDECLARED);
+    }
+    row_symbol * row = get_row_from_stack(current_table, current_identifier);
+
+    if (row->kind != desired_kind) {
+      fprintf(stderr, "Identificador [%s] usado na linha [%d] declarado como [%s] mas usado como [%s]\n", current_identifier, yylineno, get_str_symbol_kind(row->kind), get_str_symbol_kind(desired_kind));
+
+      if (row->kind == VARIABLE) {
+        exit(ERR_VARIABLE);
+      } else if (row->kind == FUNCTION) {
+        exit(ERR_FUNCTION);
       }
-      row_symbol * row = get_row_from_stack(current_table, current_identifier); 
-      if (row->kind != desired_kind) {
-        fprintf(stderr, "Identificador [%s] usado na linha [%d] declarado como [%s] mas usado como [%s]\n", current_identifier, yylineno, get_str_symbol_kind(row->kind), get_str_symbol_kind(desired_kind)); 
-        if (row->kind == VARIABLE) {
-          exit(ERR_VARIABLE); 
-        } else if (row->kind == FUNCTION) {
-          exit(ERR_FUNCTION); 
-        }
-      }
-  } ;
+    }
+  };
 
 identificador:
-  TK_IDENTIFICADOR { 
-    current_identifier = $1->valor; 
-    $$ = asd_new_token($1->valor, $1); 
+  TK_IDENTIFICADOR {
+    current_identifier = $1->valor;
+    $$ = asd_new_token($1->valor, $1);
   };
 
 literal: 
@@ -429,5 +432,5 @@ literal:
 
 void yyerror(char const *s) {
 	extern int yylineno;
-	printf("ERRO - LINHA %d - %s\n", yylineno, s);	
+	printf("ERRO - LINHA %d - %s\n", yylineno, s);
 }
