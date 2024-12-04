@@ -1,0 +1,9 @@
+fun = i <- int | y <- float | fun <- float > float {
+	int a,b,c;
+	if (a < 0) {
+		return 2; 
+	};
+	int i; 
+}
+
+
