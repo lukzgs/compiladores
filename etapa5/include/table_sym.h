@@ -5,45 +5,43 @@
 #define _TABLE_SYMBOL_H_
 
 typedef enum symbol_kind {
-    FUNCTION, 
-    VARIABLE
+  FUNCTION, 
+  VARIABLE
 } symbol_kind;
 
 typedef enum symbol_type {
-    NULL_TYPE, 
-    FLOAT, 
-    INT
+  NULL_TYPE, 
+  FLOAT, 
+  INT
 } symbol_type; 
 
-
 typedef struct row_symbol {
-    int line;
-    symbol_kind kind;
-    symbol_type type;
-    char* value; 
-    struct row_symbol *next_row;
-    struct row_symbol *previous_row; 
+  int line;
+  symbol_kind kind;
+  symbol_type type;
+  char* value; 
+  struct row_symbol *next_row;
+  struct row_symbol *previous_row; 
 } row_symbol; 
 
-
 typedef struct table_symbol {
-    row_symbol* first_row; 
-    row_symbol* last_row; 
-    struct table_symbol* next_table;
-    struct table_symbol* previous_table;
+  row_symbol* first_row; 
+  row_symbol* last_row; 
+  struct table_symbol* next_table;
+  struct table_symbol* previous_table;
 } table_symbol; 
 
 
 /*
-    Preenche as linhas da tabela com tipo nulo com o tipo informado
-*/
+ * Preenche as linhas da tabela com tipo nulo com o tipo informado
+ */
 void table_fill_type(table_symbol * table, symbol_type type);
 
-
 /*
-    Pega a primeira tabela da pilha 
-*/
+ * Pega a primeira tabela da pilha 
+ */
 table_symbol *get_first_table(table_symbol * table);
+
 /*
  * Função new_row, cria uma nova linha 
  */
