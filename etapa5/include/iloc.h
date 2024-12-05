@@ -21,8 +21,8 @@ typedef struct Iloc {
 
 // Estrutura para manter uma lista de operações ILOC
 typedef struct IlocOperationList {
-    Iloc* operation;
-    struct IlocOperationList* next_operation;
+	Iloc* operation;
+	struct IlocOperationList* next_operation;
 } IlocOperationList;
 
 
