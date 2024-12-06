@@ -59,4 +59,6 @@ void asd_print_graphviz (asd_tree_t *tree);
  * Função asd_print_export, imprime recursivamente a árvore no formato especificado. 
  */
 void asd_print_export(asd_tree_t *tree);
+
+
 #endif //_ARVORE_H_

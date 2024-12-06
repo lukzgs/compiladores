@@ -4,16 +4,17 @@
 #ifndef _TABLE_SYMBOL_H_
 #define _TABLE_SYMBOL_H_
 
+
 typedef enum symbol_kind {
-  FUNCTION, 
+  FUNCTION,
   VARIABLE
 } symbol_kind;
 
 typedef enum symbol_type {
-  NULL_TYPE, 
-  FLOAT, 
+  NULL_TYPE,
+  FLOAT,
   INT
-} symbol_type; 
+} symbol_type;
 
 typedef struct row_symbol {
   int line;
@@ -21,15 +22,15 @@ typedef struct row_symbol {
   symbol_type type;
   char* value; 
   struct row_symbol *next_row;
-  struct row_symbol *previous_row; 
-} row_symbol; 
+  struct row_symbol *previous_row;
+} row_symbol;
 
 typedef struct table_symbol {
-  row_symbol* first_row; 
-  row_symbol* last_row; 
+  row_symbol* first_row;
+  row_symbol* last_row;
   struct table_symbol* next_table;
   struct table_symbol* previous_table;
-} table_symbol; 
+} table_symbol;
 
 
 /*
@@ -38,22 +39,22 @@ typedef struct table_symbol {
 void table_fill_type(table_symbol * table, symbol_type type);
 
 /*
- * Pega a primeira tabela da pilha 
+ * Pega a primeira tabela da pilha
  */
 table_symbol *get_first_table(table_symbol * table);
 
 /*
- * Função new_row, cria uma nova linha 
+ * Função new_row, cria uma nova linha
  */
 row_symbol *new_row(int line, symbol_type type, symbol_kind kind, char *value);
 
 /*
- * Função table_new, cria uma nova tabela 
+ * Função table_new, cria uma nova tabela
  */
 table_symbol *table_new();
 
 /*
- * Função table_free, libera a tabela atual. Dá erro se ela tiver filho. Retorna a tabela anterior a tabela que foi liberada. 
+ * Função table_free, libera a tabela atual. Dá erro se ela tiver filho. Retorna a tabela anterior a tabela que foi liberada.
  */
 table_symbol * table_free(table_symbol *row);
 
@@ -63,7 +64,7 @@ table_symbol * table_free(table_symbol *row);
 void table_add_row(table_symbol *table, row_symbol *next_row);
 
 /*
- * Função table_add_table, adiciona uma tabela na pilha, retorna a ultima tabela 
+ * Função table_add_table, adiciona uma tabela na pilha, retorna a ultima tabela
  */
 table_symbol* table_add_table(table_symbol *table, table_symbol *next_table);
 
@@ -75,26 +76,27 @@ void table_print(table_symbol *tree);
 /*
  * Checa se o identificador já está definido no escopo
  */
-int is_identifier_declared(table_symbol * table, char * identifier); 
+int is_identifier_declared(table_symbol * table, char * identifier);
 
 /*
  * Checa se o identificador já está definido na pilha de escopos
  */
-int does_identifier_exist(table_symbol * current_table, char * identifier); 
+int does_identifier_exist(table_symbol * current_table, char * identifier);
 
 /*
  * Retorna a row  associada ao identificador passado no escopo atual, retorna NULL caso não exista
  */
-row_symbol * get_row_from_scope(table_symbol * table, char * identifier); 
+row_symbol * get_row_from_scope(table_symbol * table, char * identifier);
 
 /*
  * Retorna a row  associada ao identificador passado em todos os escopos, retorna NULL caso não exista
  */
-row_symbol * get_row_from_stack(table_symbol * table, char * identifier); 
+row_symbol * get_row_from_stack(table_symbol * table, char * identifier);
 
 /*
  * Transforma enum de symbol_kind em uma string
  */
-const char* get_str_symbol_kind(symbol_kind kind); 
-#endif 
+const char* get_str_symbol_kind(symbol_kind kind);
 
+
+#endif
