@@ -1,0 +1,30 @@
+
+
+
+fun = fun <- int > int 
+{
+	{
+		int fun; 
+		{
+		float fun;
+		};
+	}; 
+
+}
+
+
+fun2 => float 
+{
+
+
+
+}
+
+
+fun3 => int {
+
+
+
+
+
+}
