@@ -241,6 +241,11 @@ atribuicao:
     $$ = asd_new("=");
     asd_add_child($$, $1);
     asd_add_child($$, $5);
+    $$->type = get_row_from_stack(
+      current_table,
+      $1->token->valor
+    )->type; 
+     // atribui codigo a $$, concatena codigo da expressao e depois storeAI com $3.local, rfp e deslocamento da variavel ( usar identificador ) nunca modificar a lista de codigo de outra regra  
   };
 
 
@@ -308,6 +313,7 @@ expressao_or:
   expressao_and { $$ = $1; } |
   expressao_or TK_OC_OR expressao_and {
     $$ = asd_new("|");
+    $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -316,6 +322,7 @@ expressao_and:
   expressao_igualdade { $$ = $1; } |
   expressao_and TK_OC_AND expressao_igualdade {
     $$ = asd_new("&");
+    $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -327,6 +334,7 @@ expressao_igualdade:
   expressao_comparacao { $$ = $1; } |
   expressao_igualdade operadores_igualdade expressao_comparacao {
     $$ = $2;
+    $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -340,6 +348,7 @@ expressao_comparacao:
   expressao_soma {$$ = $1;} |
   expressao_comparacao operadores_comparacao expressao_soma {
     $$ = $2;
+    $$->type = infer_type($1->type, $3->type); 
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -351,6 +360,7 @@ expressao_soma:
   expressao_multiplicacao { $$ = $1; } |
   expressao_soma operadores_soma expressao_multiplicacao {
     $$ = $2;
+    $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
@@ -358,31 +368,41 @@ expressao_soma:
 operadores_multiplicacao:
   '*' { $$ = asd_new("*"); } |
   '/' { $$ = asd_new("/"); } |
-  '%' { $$ = asd_new("%"); };
+  '%' { $$ = asd_new("%"); }; //  gerar codigo e local nullos69
 expressao_multiplicacao:
   expressao_unarias { $$ = $1; } |
   expressao_multiplicacao operadores_multiplicacao expressao_unarias {
+  // Gera temporario,  Gera instrução dependendo do operador que os 2 locais dos operandos e coloca no temporario
     $$ = $2;
+    $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
     asd_add_child($$, $3);
   };
 
 operadores_unarios:
-  '!' { $$ = asd_new("!"); } |
+  '!' { $$ = asd_new("!"); } | // cmp_eq
   '-' { $$ = asd_new("-"); };
 expressao_unarias:
   expressao_paranteses { $$ = $1; } |
   operandos { $$ = $1; } |
   operadores_unarios expressao_unarias {
     $$ = $1;
+    $$->type = $2->type;
     asd_add_child($$, $2);
   };
 
 expressao_paranteses:
   '(' expressao ')' { $$ = $2; };
 operandos:
-  identificador variavel_esperada verifica_existencia_e_corretude_identificador { $$ = $1; } |
-  literal { $$ = $1; } |
+  identificador variavel_esperada verifica_existencia_e_corretude_identificador { 
+    $$ = $1;
+    $$->type = get_row_from_stack(current_table, $1->token->valor)->type;
+    // loadAI ( registrador_temporario,  rfp, deslocamento do identicador )
+  } |
+  literal { 
+    $$ = $1;
+    // loadI ( registrador_temporario, valor do literal )
+  } |
   chamada_funcao { $$ = $1; };
 
 verifica_declaracao_identificador:
