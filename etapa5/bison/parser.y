@@ -258,6 +258,9 @@ chamada_funcao:
     strcat(name, $1->label);
     $$ = asd_new(name);
     asd_add_child($$, $5);
+    $$->type = get_row_from_stack(
+      current_table, $1->token->valor
+    )->type; 
   };
 lista_expressoes:
   expressao  { $$ = $1; } |
@@ -445,8 +448,14 @@ identificador:
   };
 
 literal: 
-  TK_LIT_INT { $$ = asd_new_token($1->valor, $1); } |
-  TK_LIT_FLOAT { $$ = asd_new_token($1->valor, $1); };
+  TK_LIT_INT { 
+    $$ = asd_new_token($1->valor, $1);
+    $$->type = INT;
+  } |
+  TK_LIT_FLOAT { 
+    $$ = asd_new_token($1->valor, $1);
+    $$->type = FLOAT; 
+  };
 
 %%
 

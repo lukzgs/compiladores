@@ -169,3 +169,14 @@ const char* get_str_symbol_kind(symbol_kind kind) {
   }
 }
 
+symbol_type infer_type(symbol_type type1, symbol_type type2) {
+  if (type1 == NULL_TYPE || type2 == NULL_TYPE) {
+    fprintf(stderr, "Erro ao inferir tipos");
+    exit(1); 
+  }
+
+  if (type1 == FLOAT || type2 == FLOAT)
+    return FLOAT; 
+  return INT; 
+}
+
