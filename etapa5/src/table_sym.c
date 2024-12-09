@@ -1,11 +1,7 @@
 /* Lucas Guaitanelli da Silveira - 208695 */
 /* Vithor Barros Pileco - 326674 */
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include "table_sym.h"
-#define ARQUIVO_SAIDA "saida.dot"
 
 row_symbol *new_row(int line, symbol_type type, symbol_kind kind, char *value) {
   row_symbol *ret = NULL;
@@ -101,7 +97,7 @@ table_symbol* table_add_table(table_symbol *table, table_symbol *next_table) {
   }
 }
 
-void table_print(table_symbol *table) {
+void table_print(const table_symbol *table) {
   printf("line | kind | type | value\n");
   if (table != NULL) {
     row_symbol* row = table->first_row;
@@ -114,7 +110,7 @@ void table_print(table_symbol *table) {
   }
 }
 
-int is_identifier_declared(table_symbol * table, char * identifier) {
+int is_identifier_declared(const table_symbol * table, const char * identifier) {
   row_symbol * row = table->first_row;
   while (row != NULL){
     if (!strcmp(row->value, identifier)) {
@@ -125,7 +121,7 @@ int is_identifier_declared(table_symbol * table, char * identifier) {
   return 0;
 }
 
-int does_identifier_exist(table_symbol * current_table, char * identifier) {
+int does_identifier_exist(const table_symbol * current_table, const char * identifier) {
   while (current_table != NULL) {
     if (is_identifier_declared(current_table, identifier)) {
       return 1;
@@ -135,7 +131,7 @@ int does_identifier_exist(table_symbol * current_table, char * identifier) {
   return 0;
 }
 
-row_symbol *  get_row_from_stack(table_symbol * current_table, char * identifier) {
+row_symbol *  get_row_from_stack(const table_symbol * current_table, const char * identifier) {
   while (current_table != NULL) {
     row_symbol * row = get_row_from_scope(current_table, identifier);
     if (row != NULL) {
@@ -147,7 +143,7 @@ row_symbol *  get_row_from_stack(table_symbol * current_table, char * identifier
 }
 
 
-row_symbol * get_row_from_scope(table_symbol * table, char * identifier ){
+row_symbol * get_row_from_scope(const table_symbol * table, const char * identifier){
     row_symbol * row = table->first_row;
   while (row != NULL) {
     if (!strcmp(row->value, identifier)) {
@@ -169,3 +165,27 @@ const char* get_str_symbol_kind(symbol_kind kind) {
   }
 }
 
+void verify_identifier(const table_symbol * current_table, const char * current_identifier, symbol_kind desired_kind, int yylineno){
+  if (!does_identifier_exist(current_table, current_identifier)) {
+    fprintf(stderr, "Declaração  do identificador [%s] usado na linha [%d] não encontrada\n", current_identifier, yylineno);
+    exit(ERR_UNDECLARED);
+  }
+  row_symbol * row = get_row_from_stack(current_table, current_identifier);
+
+  if (row->kind != desired_kind) {
+    fprintf(stderr, "Identificador [%s] usado na linha [%d] declarado como [%s] mas usado como [%s]\n", current_identifier, yylineno, get_str_symbol_kind(row->kind), get_str_symbol_kind(desired_kind));
+
+    if (row->kind == VARIABLE) {
+      exit(ERR_VARIABLE);
+    } else if (row->kind == FUNCTION) {
+      exit(ERR_FUNCTION);
+    }
+  }
+}
+
+void verify_declaration_identifier(const table_symbol * current_table, const char * current_identifier, int yylineno){
+  if (is_identifier_declared(current_table, current_identifier)) {
+    fprintf(stderr, "Redeclaração  do identificador [%s] detectada na linha [%d], declaração prévia na linha [%d]\n", current_identifier, yylineno, get_row_from_scope(current_table, current_identifier)->line);
+    exit(ERR_DECLARED);
+  }
+}

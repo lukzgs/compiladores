@@ -4,6 +4,11 @@
 #ifndef _TABLE_SYMBOL_H_
 #define _TABLE_SYMBOL_H_
 
+#include "errors.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#define ARQUIVO_SAIDA "saida.dot"
 
 typedef enum symbol_kind {
   FUNCTION,
@@ -71,32 +76,43 @@ table_symbol* table_add_table(table_symbol *table, table_symbol *next_table);
 /*
  * Função table_print, imprime recursivamente a tabela.
  */
-void table_print(table_symbol *tree);
+void table_print(const table_symbol *tree);
 
 /*
  * Checa se o identificador já está definido no escopo
  */
-int is_identifier_declared(table_symbol * table, char * identifier);
+int is_identifier_declared(const table_symbol * table, const char * identifier);
 
 /*
  * Checa se o identificador já está definido na pilha de escopos
  */
-int does_identifier_exist(table_symbol * current_table, char * identifier);
+int does_identifier_exist(const table_symbol * current_table, const char * identifier);
 
 /*
  * Retorna a row  associada ao identificador passado no escopo atual, retorna NULL caso não exista
  */
-row_symbol * get_row_from_scope(table_symbol * table, char * identifier);
+row_symbol * get_row_from_scope(const table_symbol * table, const char * identifier);
 
 /*
  * Retorna a row  associada ao identificador passado em todos os escopos, retorna NULL caso não exista
  */
-row_symbol * get_row_from_stack(table_symbol * table, char * identifier);
+row_symbol * get_row_from_stack(const table_symbol * table, const char * identifier);
 
 /*
  * Transforma enum de symbol_kind em uma string
  */
 const char* get_str_symbol_kind(symbol_kind kind);
+
+
+/*
+ * Verifica se o identificador existe e está com o tipo correto
+ */
+void verify_identifier(const table_symbol * current_table, const char * current_identifier, symbol_kind desired_kind, int yylineno);
+
+/*
+ * Verifica se a declaração do identificador está correta
+ */
+void verify_declaration_identifier(const table_symbol * current_table, const char * current_identifier, int yylineno);
 
 
 #endif

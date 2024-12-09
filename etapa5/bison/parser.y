@@ -12,9 +12,6 @@ int yylex(void);
 void yyerror (char const *mensagem);
 extern void *arvore;
 extern table_symbol *current_table; 
-char * current_identifier; 
-symbol_kind desired_kind;
-
 %}
 
 %{
@@ -118,10 +115,11 @@ funcao: cabecalho corpo {
 };
 
 cabecalho: 
-  identificador verifica_declaracao_identificador '=' empilha_tabela lista_parametros_ou_vazio '>' tipo { 
+  identificador '=' empilha_tabela lista_parametros_ou_vazio '>' tipo { 
+    verify_declaration_identifier(current_table, $1->token->valor, yylineno);
     $$ = $1;
     table_add_row(
-      get_first_table(current_table), new_row($1->token->line, $7 , FUNCTION, $1->label)
+      get_first_table(current_table), new_row($1->token->line, $6 , FUNCTION, $1->label)
     );
    };
 corpo:
@@ -137,9 +135,10 @@ lista_parametros:
   parametro TK_OC_OR lista_parametros |
   parametro;
 parametro:
-  identificador verifica_declaracao_identificador '<' '-' tipo {
+  identificador '<' '-' tipo {
+    verify_declaration_identifier(current_table, $1->token->valor, yylineno);
     table_add_row(
-      current_table, new_row($1->token->line, $5, VARIABLE, $1->label)
+      current_table, new_row($1->token->line, $4, VARIABLE, $1->label)
     );
   };
 
@@ -217,17 +216,19 @@ lista_identificadores:
     else $$ = $3;
   };
 variavel: 
-  identificador verifica_declaracao_identificador {
+  identificador {
+    verify_declaration_identifier(current_table, $1->token->valor, yylineno);
     $$ = NULL; 
     table_add_row(
       current_table,
       new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label)
     ); 
   } |
-  identificador verifica_declaracao_identificador TK_OC_LE literal {
+  identificador TK_OC_LE literal {
+    verify_declaration_identifier(current_table, $1->token->valor, yylineno);
     $$ = asd_new("<="); 
     asd_add_child($$, $1);
-    asd_add_child($$, $4);
+    asd_add_child($$, $3);
     table_add_row(
       current_table,
       new_row($1->token->line, NULL_TYPE, VARIABLE, $1->label)
@@ -237,10 +238,11 @@ variavel:
 
 /* atribuição */
 atribuicao:
-  identificador variavel_esperada verifica_existencia_e_corretude_identificador '=' expressao {
+  identificador '=' expressao {
+    verify_identifier(current_table, $1->token->valor, VARIABLE, yylineno); 
     $$ = asd_new("=");
     asd_add_child($$, $1);
-    asd_add_child($$, $5);
+    asd_add_child($$, $3);
     $$->type = get_row_from_stack(
       current_table,
       $1->token->valor
@@ -251,13 +253,14 @@ atribuicao:
 
 /* chamada de função */
 chamada_funcao:
-  identificador funcao_esperada verifica_existencia_e_corretude_identificador '(' lista_expressoes ')' {
+  identificador '(' lista_expressoes ')' {
+    verify_identifier(current_table, $1->token->valor, FUNCTION, yylineno); 
     int len = strlen($1->label);
     char name[len + 5];
     strcpy(name, "call");
     strcat(name, $1->label);
     $$ = asd_new(name);
-    asd_add_child($$, $5);
+    asd_add_child($$, $3);
   };
 lista_expressoes:
   expressao  { $$ = $1; } |
@@ -394,7 +397,8 @@ expressao_unarias:
 expressao_paranteses:
   '(' expressao ')' { $$ = $2; };
 operandos:
-  identificador variavel_esperada verifica_existencia_e_corretude_identificador { 
+  identificador { 
+    verify_identifier(current_table, $1->token->valor, VARIABLE, yylineno); 
     $$ = $1;
     $$->type = get_row_from_stack(current_table, $1->token->valor)->type;
     // loadAI ( registrador_temporario,  rfp, deslocamento do identicador )
@@ -405,42 +409,8 @@ operandos:
   } |
   chamada_funcao { $$ = $1; };
 
-verifica_declaracao_identificador:
-  /* vazio */ {
-    if (is_identifier_declared(current_table, current_identifier)) {
-      fprintf(stderr, "Redeclaração  do identificador [%s] detectada na linha [%d], declaração prévia na linha [%d]\n", current_identifier, yylineno, get_row_from_scope(current_table, current_identifier)->line);
-      exit(ERR_DECLARED);
-    }
-  };
-
-variavel_esperada:
-  /* vazio */ { desired_kind = VARIABLE; };
-
-funcao_esperada:
-  /* vazio */ { desired_kind = FUNCTION; };
-
-verifica_existencia_e_corretude_identificador: 
-  /* vazio */ {
-    if (!does_identifier_exist(current_table, current_identifier)) {
-      fprintf(stderr, "Declaração  do identificador [%s] usado na linha [%d] não encontrada\n", current_identifier, yylineno);
-      exit(ERR_UNDECLARED);
-    }
-    row_symbol * row = get_row_from_stack(current_table, current_identifier);
-
-    if (row->kind != desired_kind) {
-      fprintf(stderr, "Identificador [%s] usado na linha [%d] declarado como [%s] mas usado como [%s]\n", current_identifier, yylineno, get_str_symbol_kind(row->kind), get_str_symbol_kind(desired_kind));
-
-      if (row->kind == VARIABLE) {
-        exit(ERR_VARIABLE);
-      } else if (row->kind == FUNCTION) {
-        exit(ERR_FUNCTION);
-      }
-    }
-  };
-
 identificador:
   TK_IDENTIFICADOR {
-    current_identifier = $1->valor;
     $$ = asd_new_token($1->valor, $1);
   };
 
