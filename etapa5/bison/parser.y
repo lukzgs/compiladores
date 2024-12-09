@@ -258,9 +258,6 @@ chamada_funcao:
     strcat(name, $1->label);
     $$ = asd_new(name);
     asd_add_child($$, $5);
-    $$->type = get_row_from_stack(
-      current_table, $1->token->valor
-    )->type; 
   };
 lista_expressoes:
   expressao  { $$ = $1; } |
