@@ -32,11 +32,11 @@ void test_print_iloc_op() {
 void test_print_iloc_op_list() {
   iloc_op* op1 = new_iloc_operation("addI", "r1", "r2", "r3");
   iloc_op* op2 = new_iloc_operation("subI", "r4", "r5", "r6");
-  add_iloc_operation(op1);
-  add_iloc_operation(op2);
+  iloc_op_list * list = add_iloc_operation(NULL, op1);
+  add_iloc_operation(list, op2);
   printf("Saída esperada:\naddI r1, r2 => r3\nsubI r4, r5 => r6\n");
   printf("Saída real:\n");
-  print_iloc_op_list();
+  print_iloc_op_list(list);
 }
 
 int main() {

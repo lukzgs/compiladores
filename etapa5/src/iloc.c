@@ -5,7 +5,6 @@
 
 #include "iloc.h"
 
-iloc_op_list* global_operation_list;
 
 // Cria uma nova operação ILOC
 iloc_op* new_iloc_operation(char* operation, char* arg1, char* arg2, char* arg3) {
@@ -33,7 +32,7 @@ iloc_op* new_iloc_operation(char* operation, char* arg1, char* arg2, char* arg3)
 }
 
 // Adiciona uma operação à lista de operações ILOC
-iloc_op_list* add_iloc_operation(iloc_op* new_iloc_op) {
+iloc_op_list* add_iloc_operation(iloc_op_list * list, iloc_op* new_iloc_op) {
   iloc_op_list *iloc_node = (iloc_op_list *)malloc(sizeof(iloc_op_list));
   if (iloc_node == NULL) {
     fprintf(stderr, "Erro na funcao add_iloc_operation() \n");
@@ -44,10 +43,10 @@ iloc_op_list* add_iloc_operation(iloc_op* new_iloc_op) {
   iloc_node->operation = new_iloc_op;
   iloc_node->next_operation = NULL;
 
-  if (global_operation_list == NULL)
-    global_operation_list = iloc_node;
+  if (list == NULL)
+    list = iloc_node;
   else {
-    iloc_op_list* current = global_operation_list;
+    iloc_op_list* current = list;
     while (current->next_operation != NULL)
       current = current->next_operation;
     current->next_operation = iloc_node;
@@ -94,8 +93,8 @@ void print_iloc_op(iloc_op* operation) {
   printf("\n");
 }
 
-void print_iloc_op_list() {
-  iloc_op_list* current =  global_operation_list;
+void print_iloc_op_list(iloc_op_list * list) {
+  iloc_op_list* current =  list;
   while (current != NULL) {
     print_iloc_op(current->operation);
     current = current->next_operation;

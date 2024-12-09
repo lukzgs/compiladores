@@ -31,12 +31,12 @@ typedef struct iloc_op_list {
 iloc_op* new_iloc_operation(char* mnemonico, char* arg1, char* arg2, char* arg3);
 
 // Adiciona uma operação à lista de operações ILOC
-iloc_op_list* add_iloc_operation(iloc_op* new_iloc_op);
+iloc_op_list* add_iloc_operation(iloc_op_list * list, iloc_op* new_iloc_op);
 
 // Imprime uma operação ILOC
 void print_iloc_op(iloc_op* operation);
 
 // Imprime a lista de operações ILOC da lista global
-void print_iloc_op_list();
+void print_iloc_op_list(iloc_op_list * list);
 
 #endif
