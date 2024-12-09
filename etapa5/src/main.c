@@ -5,6 +5,7 @@
 #include "asd.h"
 #include "table_sym.h"
 #include <stdlib.h>
+#include "iloc.h"
 
 extern int yyparse(void);
 extern int yylex_destroy(void);

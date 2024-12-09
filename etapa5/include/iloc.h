@@ -39,4 +39,8 @@ void print_iloc_op(iloc_op* operation);
 // Imprime a lista de operações ILOC da lista global
 void print_iloc_op_list(iloc_op_list * list);
 
+char *generate_label(); 
+
+char *generate_temp(); 
+
 #endif

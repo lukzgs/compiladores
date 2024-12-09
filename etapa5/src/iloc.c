@@ -101,4 +101,23 @@ void print_iloc_op_list(iloc_op_list * list) {
   }
 }
 
+char *generate_label(){
+  static int label_num = 0;
+  int length = snprintf( NULL, 0, "L%d", label_num );
+  char* str = malloc( length + 1 );
+  snprintf( str, length + 1, "L%d", label_num);
+  label_num++; 
+  return str; 
+}
+
+char *generate_temp(){
+  static int temp_num = 0; 
+  int length = snprintf( NULL, 0, "r%d", temp_num );
+  char* str = malloc( length + 1 );
+  snprintf( str, length + 1, "r%d", temp_num);
+  temp_num++;
+  return str; 
+}
+
+
 #endif
