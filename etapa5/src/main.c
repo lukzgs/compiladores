@@ -19,6 +19,7 @@ int main (int argc, char **argv) {
   current_table = table_new();
   int ret = yyparse();
   yylex_destroy();
+  print_iloc_op_list(((asd_tree_t * ) arvore)->code);
   asd_free(arvore);
   table_free(current_table);
   return ret;

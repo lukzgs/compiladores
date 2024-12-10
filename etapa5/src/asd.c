@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "asd.h"
+#include "iloc.h"
 #define ARQUIVO_SAIDA "saida.dot"
 
 asd_tree_t *asd_new(const char *label) {
@@ -15,6 +16,8 @@ asd_tree_t *asd_new(const char *label) {
     ret->number_of_children = 0;
     ret->children = NULL;
     ret->token = NULL;
+    ret->code = NULL;
+    ret->temp = NULL; 
   }
   return ret;
 }
@@ -39,6 +42,8 @@ void asd_free(asd_tree_t *tree) {
     }
     free(tree->children);
     free(tree->label);
+    free(tree->temp); 
+    // TODO free tree -> cod
     if (tree->token != NULL) free(tree->token); 
     free(tree);
   }
@@ -49,6 +54,12 @@ void asd_add_child(asd_tree_t *tree, asd_tree_t *child) {
     tree->number_of_children++;
     tree->children = realloc(tree->children, tree->number_of_children * sizeof(asd_tree_t*));
     tree->children[tree->number_of_children-1] = child;
+    if (child->code != NULL){
+      if (tree->code == NULL){
+        tree->code = create_iloc_list(); 
+      }
+      copy_list(tree->code, child->code); 
+    }
   } else {
     printf("Erro: %s recebeu parâmetro tree = %p / %p.\n", __FUNCTION__, tree, child);
   }
@@ -117,6 +128,16 @@ void asd_print_export(asd_tree_t *tree) {
   if (tree != NULL) {
     _asd_print_export(tree);
   }
+}
+
+
+
+void generate_expression_code(asd_tree_t * operator, char * op1_temp, char * op2_temp, bool is_binary){
+    if (operator->code != NULL){
+      operator->temp = generate_temp();
+      char *instruction = is_binary ? select_binary_instruction(operator->label) : select_unary_instruction(operator->label); 
+      add_iloc_operation(operator->code, new_iloc_operation(instruction, op1_temp, op2_temp, operator->temp));
+    }
 }
 
 

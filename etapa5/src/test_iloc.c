@@ -14,7 +14,7 @@ void test_new_iloc_operation() {
 
 void test_add_iloc_operation() {
   iloc_op* op = new_iloc_operation("addI", "r1", "r2", "r3");
-  iloc_op_list* list = add_iloc_operation(op);
+  iloc_op_list* list = add_iloc_operation(NULL, op);
   if (list == NULL || list->operation != op) {
     printf("Erro: add_iloc_operation falhou\n");
     return;

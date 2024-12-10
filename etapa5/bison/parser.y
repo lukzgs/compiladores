@@ -319,6 +319,7 @@ expressao_or:
     $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
     asd_add_child($$, $3);
+    generate_expression_code($$, $1->temp, $3->temp, true); 
   };
 
 expressao_and:
@@ -328,6 +329,7 @@ expressao_and:
     $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
     asd_add_child($$, $3);
+    generate_expression_code($$, $1->temp, $3->temp, true); 
   };
 
 operadores_igualdade:
@@ -340,6 +342,7 @@ expressao_igualdade:
     $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
     asd_add_child($$, $3);
+    generate_expression_code($2, $1->temp, $3->temp, true); 
   };
 
 operadores_comparacao:
@@ -354,6 +357,7 @@ expressao_comparacao:
     $$->type = infer_type($1->type, $3->type); 
     asd_add_child($$, $1);
     asd_add_child($$, $3);
+    generate_expression_code($2, $1->temp, $3->temp, true); 
   };
 
 operadores_soma:
@@ -366,12 +370,13 @@ expressao_soma:
     $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
     asd_add_child($$, $3);
+    generate_expression_code($2, $1->temp, $3->temp, true); 
   };
 
 operadores_multiplicacao:
   '*' { $$ = asd_new("*"); } |
   '/' { $$ = asd_new("/"); } |
-  '%' { $$ = asd_new("%"); }; //  gerar codigo e local nullos69
+  '%' { $$ = asd_new("%"); }; //  gerar codigo e local nullos
 expressao_multiplicacao:
   expressao_unarias { $$ = $1; } |
   expressao_multiplicacao operadores_multiplicacao expressao_unarias {
@@ -380,11 +385,12 @@ expressao_multiplicacao:
     $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
     asd_add_child($$, $3);
+    generate_expression_code($2, $1->temp, $3->temp, true); 
   };
 
 operadores_unarios:
-  '!' { $$ = asd_new("!"); } | // cmp_eq
-  '-' { $$ = asd_new("-"); };
+  '!' { $$ = asd_new("!"); } | // cmp_eq  r1 0 
+  '-' { $$ = asd_new("-"); }; // mult r1 -1
 expressao_unarias:
   expressao_paranteses { $$ = $1; } |
   operandos { $$ = $1; } |
@@ -392,6 +398,11 @@ expressao_unarias:
     $$ = $1;
     $$->type = $2->type;
     asd_add_child($$, $2);
+    if ($$->code != NULL){
+      char * temp = generate_temp();
+      add_iloc_operation($$->code, new_iloc_operation("loadI", get_unary_constant($1->label), temp, NULL)); 
+      generate_expression_code($$, $2->temp, temp, false);
+    }
   };
 
 expressao_paranteses:
@@ -401,11 +412,14 @@ operandos:
     verify_identifier(current_table, $1->token->valor, VARIABLE, yylineno); 
     $$ = $1;
     $$->type = get_row_from_stack(current_table, $1->token->valor)->type;
+    $$->temp = generate_temp(); 
+    // $$->code = add_iloc_operation(create_iloc_list(), new_iloc_operation("loadAI", row->temp , rfp, $$->temp)); 
     // loadAI ( registrador_temporario,  rfp, deslocamento do identicador )
   } |
   literal { 
     $$ = $1;
-    // loadI ( registrador_temporario, valor do literal )
+    $$->temp = generate_temp();
+    $$->code = add_iloc_operation(create_iloc_list(), new_iloc_operation("loadI", $$->token->valor, $$->temp, NULL)); 
   } |
   chamada_funcao { $$ = $1; };
 

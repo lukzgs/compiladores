@@ -4,7 +4,10 @@
 #ifndef _ARVORE_H_
 #define _ARVORE_H_
 
+#include "iloc.h"
 #include "table_sym.h"
+#include <stdbool.h>
+
 
 enum type {
   IDENTIFICADOR = 1,
@@ -24,6 +27,8 @@ typedef struct asd_tree {
   struct asd_tree *last_node;
   struct valor_token * token;
   symbol_type type;
+  iloc_op_list  *code; 
+  char *temp;
 } asd_tree_t;
 
 
@@ -67,5 +72,7 @@ void asd_print_export(asd_tree_t *tree);
  */
 symbol_type infer_type(symbol_type type1, symbol_type type2); 
 
+
+void generate_expression_code(asd_tree_t * operator, char * op1_temp, char * op2_temp, bool is_binary); 
 
 #endif //_ARVORE_H_

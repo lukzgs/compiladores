@@ -31,27 +31,67 @@ iloc_op* new_iloc_operation(char* operation, char* arg1, char* arg2, char* arg3)
   return op;
 }
 
-// Adiciona uma operação à lista de operações ILOC
-iloc_op_list* add_iloc_operation(iloc_op_list * list, iloc_op* new_iloc_op) {
-  iloc_op_list *iloc_node = (iloc_op_list *)malloc(sizeof(iloc_op_list));
-  if (iloc_node == NULL) {
-    fprintf(stderr, "Erro na funcao add_iloc_operation() \n");
+iloc_op *copy_operation(iloc_op * operation){
+  iloc_op* op = (iloc_op*)malloc(sizeof(iloc_op));
+  if (op == NULL) {
+    fprintf(stderr, "Erro na funcao copy_operation() \n");
     fprintf(stderr, "Alocacao de memória falhou. \n");
     exit(EXIT_FAILURE);
   }
+  op->mnemonico = operation->mnemonico;
+  op->arg1 = operation->arg1;
+  op->arg2 = operation->arg2;
+  op->arg3 = operation->arg3;
+  return op;
+}
 
-  iloc_node->operation = new_iloc_op;
+
+iloc_op_list* copy_list(iloc_op_list *dest, iloc_op_list *src){
+  while (src != NULL){
+    add_iloc_operation(dest, copy_operation(src->operation));
+    src = src->next_operation;
+  }
+  return dest; 
+}
+
+iloc_op_list* concatenate_lists(iloc_op_list * list1, iloc_op_list * list2) {
+  iloc_op_list *iloc_node = create_iloc_list();
+  copy_list(iloc_node, list1);
+  copy_list(iloc_node, list2);
+  return iloc_node; 
+}
+
+iloc_op_list* create_iloc_list(){
+  iloc_op_list *iloc_node = (iloc_op_list *)malloc(sizeof(iloc_op_list));
+  if (iloc_node == NULL) {
+    fprintf(stderr, "Erro na funcao create_list() \n");
+    fprintf(stderr, "Alocacao de memória falhou. \n");
+    exit(EXIT_FAILURE);
+  }
   iloc_node->next_operation = NULL;
+  iloc_node->operation = NULL; 
+  return iloc_node; 
+}
 
-  if (list == NULL)
-    list = iloc_node;
-  else {
-    iloc_op_list* current = list;
+// Adiciona uma operação à lista de operações ILOC
+iloc_op_list* add_iloc_operation(iloc_op_list * list, iloc_op* new_iloc_op) {
+  if (list == NULL || new_iloc_op == NULL){
+    fprintf(stderr, "Erro na funcao add_iloc_operation() \n");
+    exit(EXIT_FAILURE);
+
+  }
+  if (list->operation != NULL) {
+    iloc_op_list * current = list; 
     while (current->next_operation != NULL)
       current = current->next_operation;
+    iloc_op_list *iloc_node = create_iloc_list(); 
+    iloc_node->operation = new_iloc_op;
+    iloc_node->next_operation = NULL;
     current->next_operation = iloc_node;
+  } else {
+    list->operation = new_iloc_op; 
   }
-  return iloc_node;
+  return list;
 }
 
 // Função para imprimir uma operação ILOC
@@ -88,16 +128,16 @@ void print_iloc_op(iloc_op* operation) {
     strcmp(mnemonico, "cmp_LT") == 0 ||
     strcmp(mnemonico, "and") == 0 ||
     strcmp(mnemonico, "or") == 0
-  )
+  ) {
     printf("%s %s, %s => %s", operation->mnemonico, operation->arg1, operation->arg2, operation->arg3);
+  }
   printf("\n");
 }
 
 void print_iloc_op_list(iloc_op_list * list) {
-  iloc_op_list* current =  list;
-  while (current != NULL) {
-    print_iloc_op(current->operation);
-    current = current->next_operation;
+  while (list != NULL) {
+    print_iloc_op(list->operation);
+    list = list->next_operation;
   }
 }
 
@@ -119,5 +159,67 @@ char *generate_temp(){
   return str; 
 }
 
+char *select_unary_instruction(char * operation){
+  if (!strcmp(operation, "!")){
+    return "cmp_EQ";
+  }
+  if (!strcmp(operation, "-")){
+    return "mult";
+  }
+  printf("Error in function select_unary_instruction"); 
+  exit(1); 
+}
+
+char * get_unary_constant(char * operation){
+  if (!strcmp(operation, "!")){
+    return "0";
+  }
+  if (!strcmp(operation, "-")){
+    return "-1";
+  }
+  printf("Error in function get_unary_constant"); 
+  exit(1); 
+}
+
+char *select_binary_instruction(char * operation){
+  if (!strcmp(operation, "+")){
+    return "add"; 
+  } 
+  if (!strcmp(operation, "-")){
+    return "sub"; 
+  } 
+  if (!strcmp(operation, "*")){
+    return "mult"; 
+  } 
+  if (!strcmp(operation, "/")){
+    return "div"; 
+  } 
+  if (!strcmp(operation, "==")){
+    return "cmp_EQ"; 
+  } 
+  if (!strcmp(operation, "!=")){
+    return "cmp_NE"; 
+  } 
+  if (!strcmp(operation, ">")){
+    return "cmp_GT"; 
+  } 
+  if (!strcmp(operation, "<")){
+    return "cmp_LT"; 
+  } 
+  if (!strcmp(operation, "<=")){
+    return "cmp_LE"; 
+  } 
+  if (!strcmp(operation, ">=")){
+    return "cmp_GE"; 
+  } 
+  if (!strcmp(operation, "&")){
+    return "and";
+  }
+  if (!strcmp(operation, "|")){
+    return "or";
+  }
+  printf("Error in function select_binary_instruction"); 
+  exit(1); 
+}
 
 #endif

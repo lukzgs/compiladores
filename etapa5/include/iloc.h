@@ -41,6 +41,18 @@ void print_iloc_op_list(iloc_op_list * list);
 
 char *generate_label(); 
 
+char *select_unary_instruction(char * operation);
+
+char *select_binary_instruction(char * operation); 
+
 char *generate_temp(); 
+
+iloc_op_list* copy_list(iloc_op_list *dest, iloc_op_list *src);
+
+iloc_op_list* create_iloc_list(); 
+
+iloc_op_list* concatenate_lists(iloc_op_list * list1, iloc_op_list * list2);
+
+char * get_unary_constant(char * operation); 
 
 #endif
