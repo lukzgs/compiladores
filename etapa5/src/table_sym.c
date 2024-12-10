@@ -35,6 +35,7 @@ table_symbol *table_new() {
       ret->last_row = NULL;
       ret->next_table = NULL;
       ret->previous_table = NULL;
+      ret->shift = 0;
   }
   return ret; 
 }
@@ -71,6 +72,11 @@ void table_add_row(table_symbol *table, row_symbol *next_row) {
       table->last_row = next_row;
       table->first_row = next_row;
     }
+    int length = snprintf( NULL, 0, "%d", table->shift );
+    next_row->shift = malloc( length + 1 );
+    snprintf(next_row->shift, length + 1, "%d", table->shift);
+    table->shift += sizeof(int);
+    next_row->temp = generate_temp(); 
   } else {
     printf("Erro: %s recebeu parâmetro table = %p / %p.\n", __FUNCTION__, table, next_row);
   }

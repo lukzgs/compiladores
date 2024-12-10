@@ -7,6 +7,7 @@
 #include "errors.h"
 #include <string.h>
 #include <stdlib.h>
+#include "iloc.h"
 #include <stdio.h>
 #define ARQUIVO_SAIDA "saida.dot"
 
@@ -26,6 +27,8 @@ typedef struct row_symbol {
   symbol_kind kind;
   symbol_type type;
   char* value; 
+  char *temp; 
+  char *shift; 
   struct row_symbol *next_row;
   struct row_symbol *previous_row;
 } row_symbol;
@@ -33,6 +36,7 @@ typedef struct row_symbol {
 typedef struct table_symbol {
   row_symbol* first_row;
   row_symbol* last_row;
+  int shift; 
   struct table_symbol* next_table;
   struct table_symbol* previous_table;
 } table_symbol;

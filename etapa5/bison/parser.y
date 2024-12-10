@@ -243,11 +243,12 @@ atribuicao:
     $$ = asd_new("=");
     asd_add_child($$, $1);
     asd_add_child($$, $3);
-    $$->type = get_row_from_stack(
-      current_table,
-      $1->token->valor
-    )->type; 
-     // atribui codigo a $$, concatena codigo da expressao e depois storeAI com $3.local, rfp e deslocamento da variavel ( usar identificador ) nunca modificar a lista de codigo de outra regra  
+    row_symbol * row = get_row_from_stack(current_table, $1->token->valor);
+    $$->type = row->type; 
+    if ($$->code != NULL){
+      $$->code = add_iloc_operation($$->code, new_iloc_operation("loadI", row->shift, row->temp, NULL));
+      $$->code = add_iloc_operation($$->code, new_iloc_operation("storeAO", $3->temp, row->temp, "rfp")); 
+    }
   };
 
 
@@ -411,10 +412,10 @@ operandos:
   identificador { 
     verify_identifier(current_table, $1->token->valor, VARIABLE, yylineno); 
     $$ = $1;
-    $$->type = get_row_from_stack(current_table, $1->token->valor)->type;
+    row_symbol * row = get_row_from_stack(current_table, $1->token->valor);
+    $$->type = row->type;
     $$->temp = generate_temp(); 
-    // $$->code = add_iloc_operation(create_iloc_list(), new_iloc_operation("loadAI", row->temp , rfp, $$->temp)); 
-    // loadAI ( registrador_temporario,  rfp, deslocamento do identicador )
+    $$->code = add_iloc_operation(create_iloc_list(), new_iloc_operation("loadAO", row->temp, "rfp", $$->temp)); 
   } |
   literal { 
     $$ = $1;

@@ -97,12 +97,12 @@ iloc_op_list* add_iloc_operation(iloc_op_list * list, iloc_op* new_iloc_op) {
 // Função para imprimir uma operação ILOC
 void print_iloc_op(iloc_op* operation) {
   char* mnemonico = operation->mnemonico;
-  if (strcmp(mnemonico, "storeAI") == 0) 
+  if (strcmp(mnemonico, "storeAI") == 0 || !strcmp(mnemonico, "storeAO")) 
     // storeAI r1 => r2, c3 // Memoria(r2 + c3) = r1
     printf("%s %s => %s, %s", operation->mnemonico, operation->arg1, operation->arg2, operation->arg3);
-  else if (strcmp(mnemonico, "loadAI") == 0)
+  else if (strcmp(mnemonico, "loadAI") == 0 || !strcmp(mnemonico, "loadAO"))
     // loadAI r1, c2 => r3 // r3 = Memoria(r1 + c2)
-    printf("%s %s, %s => %s", operation->mnemonico, operation->arg2, operation->arg3, operation->arg1);
+    printf("%s %s, %s => %s", operation->mnemonico, operation->arg1, operation->arg2, operation->arg3);
   else if (strcmp(mnemonico, "loadI") == 0)
     // loadI c1 => r2 // r2 = c1
     printf("%s %s => %s", operation->mnemonico, operation->arg1, operation->arg2);
