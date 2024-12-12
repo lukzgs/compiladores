@@ -245,10 +245,8 @@ atribuicao:
     asd_add_child($$, $3);
     row_symbol * row = get_row_from_stack(current_table, $1->token->valor);
     $$->type = row->type; 
-    if ($$->code != NULL){
-      $$->code = add_iloc_operation($$->code, new_iloc_operation("loadI", row->shift, row->temp, NULL));
-      $$->code = add_iloc_operation($$->code, new_iloc_operation("storeAO", $3->temp, row->temp, "rfp")); 
-    }
+    $$->code = add_iloc_operation($$->code, new_iloc_operation("loadI", row->shift, row->temp, NULL));
+    $$->code = add_iloc_operation($$->code, new_iloc_operation("storeAO", $3->temp, row->temp, "rfp")); 
   };
 
 
@@ -290,10 +288,20 @@ condicional_if:
   TK_PR_IF '(' expressao ')' bloco_comandos else_opcional {
     $$ = asd_new("if");
     asd_add_child($$, $3);
-    if($5 != NULL)
-      asd_add_child($$, $5);
-      if($6 != NULL)
+    char *l1 = generate_label(), *l2 = generate_label(), *l3 = generate_label();
+    add_iloc_operation($$->code, new_iloc_operation("cbr", $3->temp, l1, l2)); 
+    add_iloc_operation($$->code, new_iloc_operation("label", l1, NULL, NULL)); 
+    if($5 != NULL){
+      asd_add_child($$, $5); 
+    }
+    add_iloc_operation($$->code, new_iloc_operation("jumpI", l3, NULL, NULL)); 
+    add_iloc_operation($$->code, new_iloc_operation("label", l2, NULL, NULL)); 
+      if($6 != NULL){
         asd_add_child($$, $6);
+      }
+    add_iloc_operation($$->code, new_iloc_operation("label", l3, NULL, NULL)); 
+
+
   }; 
 else_opcional: 
   TK_PR_ELSE bloco_comandos { $$ = $2; } |
@@ -304,9 +312,16 @@ else_opcional:
 iterativo:
   TK_PR_WHILE '(' expressao ')' bloco_comandos {
     $$ = asd_new("while");
+    char *l1 = generate_label(), *l2 = generate_label(), *l3 = generate_label();
+    $$->code = add_iloc_operation(create_iloc_list(), new_iloc_operation("label", l3, NULL, NULL)); 
     asd_add_child($$, $3);
-    if($5 != NULL)
+    add_iloc_operation($$->code, new_iloc_operation("cbr", $3->temp, l1, l2)); 
+    add_iloc_operation($$->code, new_iloc_operation("label", l1, NULL, NULL)); 
+    if($5 != NULL) {
       asd_add_child($$, $5);
+    }
+    add_iloc_operation($$->code, new_iloc_operation("jumpI", l3, NULL, NULL)); 
+    add_iloc_operation($$->code, new_iloc_operation("label", l2, NULL, NULL)); 
   };
 
 
@@ -381,7 +396,6 @@ operadores_multiplicacao:
 expressao_multiplicacao:
   expressao_unarias { $$ = $1; } |
   expressao_multiplicacao operadores_multiplicacao expressao_unarias {
-  // Gera temporario,  Gera instrução dependendo do operador que os 2 locais dos operandos e coloca no temporario
     $$ = $2;
     $$->type = infer_type($1->type, $3->type);
     asd_add_child($$, $1);
@@ -390,8 +404,8 @@ expressao_multiplicacao:
   };
 
 operadores_unarios:
-  '!' { $$ = asd_new("!"); } | // cmp_eq  r1 0 
-  '-' { $$ = asd_new("-"); }; // mult r1 -1
+  '!' { $$ = asd_new("!"); } |  
+  '-' { $$ = asd_new("-"); }; 
 expressao_unarias:
   expressao_paranteses { $$ = $1; } |
   operandos { $$ = $1; } |
@@ -399,11 +413,9 @@ expressao_unarias:
     $$ = $1;
     $$->type = $2->type;
     asd_add_child($$, $2);
-    if ($$->code != NULL){
-      char * temp = generate_temp();
-      add_iloc_operation($$->code, new_iloc_operation("loadI", get_unary_constant($1->label), temp, NULL)); 
-      generate_expression_code($$, $2->temp, temp, false);
-    }
+    char * temp = generate_temp();
+    add_iloc_operation($$->code, new_iloc_operation("loadI", get_unary_constant($1->label), temp, NULL)); 
+    generate_expression_code($$, $2->temp, temp, false);
   };
 
 expressao_paranteses:

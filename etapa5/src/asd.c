@@ -42,9 +42,9 @@ void asd_free(asd_tree_t *tree) {
     }
     free(tree->children);
     free(tree->label);
-    free(tree->temp); 
-    // TODO free tree -> cod
-    if (tree->token != NULL) free(tree->token); 
+    free(tree->temp);
+    free_iloc_op_list(tree->code);
+    free(tree->token); 
     free(tree);
   }
 }
@@ -133,11 +133,9 @@ void asd_print_export(asd_tree_t *tree) {
 
 
 void generate_expression_code(asd_tree_t * operator, char * op1_temp, char * op2_temp, bool is_binary){
-    if (operator->code != NULL){
-      operator->temp = generate_temp();
-      char *instruction = is_binary ? select_binary_instruction(operator->label) : select_unary_instruction(operator->label); 
-      add_iloc_operation(operator->code, new_iloc_operation(instruction, op1_temp, op2_temp, operator->temp));
-    }
+    operator->temp = generate_temp();
+    char *instruction = is_binary ? select_binary_instruction(operator->label) : select_unary_instruction(operator->label); 
+    add_iloc_operation(operator->code, new_iloc_operation(instruction, op1_temp, op2_temp, operator->temp));
 }
 
 

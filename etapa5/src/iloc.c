@@ -6,6 +6,7 @@
 #include "iloc.h"
 
 
+
 // Cria uma nova operação ILOC
 iloc_op* new_iloc_operation(char* operation, char* arg1, char* arg2, char* arg3) {
 
@@ -38,13 +39,37 @@ iloc_op *copy_operation(iloc_op * operation){
     fprintf(stderr, "Alocacao de memória falhou. \n");
     exit(EXIT_FAILURE);
   }
-  op->mnemonico = operation->mnemonico;
-  op->arg1 = operation->arg1;
-  op->arg2 = operation->arg2;
-  op->arg3 = operation->arg3;
+  if (operation->mnemonico != NULL){
+    op->mnemonico = strdup(operation->mnemonico);
+  }  if (operation->arg1 != NULL){
+    op->arg1 = strdup(operation->arg1);
+  }
+  if (operation->arg2 != NULL){
+    op->arg2 = strdup(operation->arg2);
+  }
+  if (operation->arg3 != NULL){
+    op->arg3 = strdup(operation->arg3);
+  }
   return op;
 }
 
+
+void free_iloc_op(iloc_op * op){
+  free(op->mnemonico);
+  free(op->arg1);
+  free(op->arg2);
+  free(op->arg3);
+}
+
+void free_iloc_op_list(iloc_op_list *lst){
+  iloc_op_list * temp;
+  while (lst != NULL){
+    temp = lst->next_operation;
+    free(lst->operation);
+    free(lst);
+    lst = temp;
+  }
+}
 
 iloc_op_list* copy_list(iloc_op_list *dest, iloc_op_list *src){
   while (src != NULL){
@@ -52,13 +77,6 @@ iloc_op_list* copy_list(iloc_op_list *dest, iloc_op_list *src){
     src = src->next_operation;
   }
   return dest; 
-}
-
-iloc_op_list* concatenate_lists(iloc_op_list * list1, iloc_op_list * list2) {
-  iloc_op_list *iloc_node = create_iloc_list();
-  copy_list(iloc_node, list1);
-  copy_list(iloc_node, list2);
-  return iloc_node; 
 }
 
 iloc_op_list* create_iloc_list(){
@@ -108,13 +126,13 @@ void print_iloc_op(iloc_op* operation) {
     printf("%s %s => %s", operation->mnemonico, operation->arg1, operation->arg2);
   else if (strcmp(mnemonico, "label") == 0)
     // label
-    printf("%s:", operation->arg3);
+    printf("%s:", operation->arg1);
   else if (strcmp(mnemonico, "cbr") == 0)
     // cbr r1 -> l2, l3 // PC = endereço(l2) se r1 = true, senão PC = endereço(l3)
-    printf("%s %s => %s, %s", operation->mnemonico, operation->arg3, operation->arg1, operation->arg2);
+    printf("%s %s => %s, %s", operation->mnemonico, operation->arg1, operation->arg2, operation->arg3);
   else if (strcmp(mnemonico, "jumpI") == 0)
     // jumpI -> l1 // PC = endereço(l1)
-    printf("%s => %s", operation->mnemonico, operation->arg3);
+    printf("%s => %s", operation->mnemonico, operation->arg1);
   else if (
     strcmp(mnemonico, "add") == 0 ||
     strcmp(mnemonico, "sub") == 0 ||

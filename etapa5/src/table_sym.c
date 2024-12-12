@@ -48,6 +48,8 @@ table_symbol *table_free(table_symbol *table) {
       while (row != NULL) {
         row_symbol* next = row->next_row;
         free(row->value); 
+        free(row->temp);
+        free(row->shift); 
         free(row); 
         row = next; 
       }
