@@ -39,31 +39,29 @@ iloc_op *copy_operation(iloc_op * operation){
     fprintf(stderr, "Alocacao de memória falhou. \n");
     exit(EXIT_FAILURE);
   }
-  if (operation->mnemonico != NULL){
+  if (operation->mnemonico != NULL)
     op->mnemonico = strdup(operation->mnemonico);
-  }  if (operation->arg1 != NULL){
+  if (operation->arg1 != NULL)
     op->arg1 = strdup(operation->arg1);
-  }
-  if (operation->arg2 != NULL){
-    op->arg2 = strdup(operation->arg2);
-  }
-  if (operation->arg3 != NULL){
+  if (operation->arg2 != NULL)
+    op->arg2 = strdup(operation->arg2);  
+  if (operation->arg3 != NULL)
     op->arg3 = strdup(operation->arg3);
-  }
+  
   return op;
 }
 
 
-void free_iloc_op(iloc_op * op){
+void free_iloc_op(iloc_op * op) {
   free(op->mnemonico);
   free(op->arg1);
   free(op->arg2);
   free(op->arg3);
 }
 
-void free_iloc_op_list(iloc_op_list *lst){
+void free_iloc_op_list(iloc_op_list *lst) {
   iloc_op_list * temp;
-  while (lst != NULL){
+  while (lst != NULL) {
     temp = lst->next_operation;
     free(lst->operation);
     free(lst);
@@ -159,85 +157,69 @@ void print_iloc_op_list(iloc_op_list * list) {
   }
 }
 
-char *generate_label(){
+char *generate_label() {
   static int label_num = 0;
   int length = snprintf( NULL, 0, "L%d", label_num );
   char* str = malloc( length + 1 );
   snprintf( str, length + 1, "L%d", label_num);
-  label_num++; 
-  return str; 
+  label_num++;
+  return str;
 }
 
-char *generate_temp(){
-  static int temp_num = 0; 
+char *generate_temp() {
+  static int temp_num = 0;
   int length = snprintf( NULL, 0, "r%d", temp_num );
   char* str = malloc( length + 1 );
   snprintf( str, length + 1, "r%d", temp_num);
   temp_num++;
-  return str; 
+  return str;
 }
 
-char *select_unary_instruction(char * operation){
-  if (!strcmp(operation, "!")){
+char *select_unary_instruction(char * operation) {
+  if (!strcmp(operation, "!"))
     return "cmp_EQ";
-  }
-  if (!strcmp(operation, "-")){
+  if (!strcmp(operation, "-"))
     return "mult";
-  }
-  printf("Error in function select_unary_instruction"); 
-  exit(1); 
+  printf("Error in function select_unary_instruction");
+  exit(1);
 }
 
-char * get_unary_constant(char * operation){
-  if (!strcmp(operation, "!")){
+char * get_unary_constant(char * operation) {
+  if (!strcmp(operation, "!"))
     return "0";
-  }
-  if (!strcmp(operation, "-")){
+  if (!strcmp(operation, "-"))
     return "-1";
-  }
   printf("Error in function get_unary_constant"); 
-  exit(1); 
+  exit(1);
 }
 
-char *select_binary_instruction(char * operation){
-  if (!strcmp(operation, "+")){
-    return "add"; 
-  } 
-  if (!strcmp(operation, "-")){
-    return "sub"; 
-  } 
-  if (!strcmp(operation, "*")){
-    return "mult"; 
-  } 
-  if (!strcmp(operation, "/")){
+char *select_binary_instruction(char * operation) {
+  if (!strcmp(operation, "+"))
+    return "add";
+  if (!strcmp(operation, "-"))
+    return "sub";
+  if (!strcmp(operation, "*"))
+    return "mult";
+  if (!strcmp(operation, "/"))
     return "div"; 
-  } 
-  if (!strcmp(operation, "==")){
+  if (!strcmp(operation, "=="))
     return "cmp_EQ"; 
-  } 
-  if (!strcmp(operation, "!=")){
+  if (!strcmp(operation, "!="))
     return "cmp_NE"; 
-  } 
-  if (!strcmp(operation, ">")){
+  if (!strcmp(operation, ">"))
     return "cmp_GT"; 
-  } 
-  if (!strcmp(operation, "<")){
+  if (!strcmp(operation, "<"))
     return "cmp_LT"; 
-  } 
-  if (!strcmp(operation, "<=")){
+  if (!strcmp(operation, "<="))
     return "cmp_LE"; 
-  } 
-  if (!strcmp(operation, ">=")){
+  if (!strcmp(operation, ">="))
     return "cmp_GE"; 
-  } 
-  if (!strcmp(operation, "&")){
+  if (!strcmp(operation, "&"))
     return "and";
-  }
-  if (!strcmp(operation, "|")){
+  if (!strcmp(operation, "|"))
     return "or";
-  }
   printf("Error in function select_binary_instruction"); 
-  exit(1); 
+  exit(1);
 }
 
 #endif
