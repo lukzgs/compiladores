@@ -1,0 +1,5 @@
+fun = i <- int | y <- float | i <- float > float {
+
+}
+
+
