@@ -19,6 +19,10 @@ typedef struct iloc_op {
   char* arg1;
   char* arg2;
   char* arg3;
+  int register_1;
+  int register_2;
+  char* base_1;
+  char* base_2;
 } iloc_op;
 
 // Estrutura para manter uma lista de operações ILOC

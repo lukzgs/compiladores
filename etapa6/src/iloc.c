@@ -5,11 +5,8 @@
 
 #include "iloc.h"
 
-
-
 // Cria uma nova operação ILOC
 iloc_op* new_iloc_operation(char* operation, char* arg1, char* arg2, char* arg3) {
-
   iloc_op* op = (iloc_op*)malloc(sizeof(iloc_op));
   if (op == NULL) {
     fprintf(stderr, "Erro na funcao new_iloc_operation() \n");
@@ -32,7 +29,8 @@ iloc_op* new_iloc_operation(char* operation, char* arg1, char* arg2, char* arg3)
   return op;
 }
 
-iloc_op *copy_operation(iloc_op * operation){
+// Cria uma cópia de uma operação ILOC existente
+iloc_op *copy_operation(iloc_op * operation) {
   iloc_op* op = (iloc_op*)malloc(sizeof(iloc_op));
   if (op == NULL) {
     fprintf(stderr, "Erro na funcao copy_operation() \n");
@@ -51,7 +49,7 @@ iloc_op *copy_operation(iloc_op * operation){
   return op;
 }
 
-
+// Libera a memória alocada para uma operação ILOC
 void free_iloc_op(iloc_op * op) {
   free(op->mnemonico);
   free(op->arg1);
@@ -59,6 +57,7 @@ void free_iloc_op(iloc_op * op) {
   free(op->arg3);
 }
 
+// Libera a memória alocada para uma lista de operações ILOC
 void free_iloc_op_list(iloc_op_list *lst) {
   iloc_op_list * temp;
   while (lst != NULL) {
@@ -69,6 +68,7 @@ void free_iloc_op_list(iloc_op_list *lst) {
   }
 }
 
+// Copia uma lista de operações ILOC
 iloc_op_list* copy_list(iloc_op_list *dest, iloc_op_list *src) {
   while (src != NULL) {
     add_iloc_operation(dest, copy_operation(src->operation));
@@ -77,6 +77,7 @@ iloc_op_list* copy_list(iloc_op_list *dest, iloc_op_list *src) {
   return dest;
 }
 
+// Cria uma nova lista de operações ILOC
 iloc_op_list* create_iloc_list() {
   iloc_op_list *iloc_node = (iloc_op_list *)malloc(sizeof(iloc_op_list));
   if (iloc_node == NULL) {

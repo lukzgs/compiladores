@@ -132,10 +132,10 @@ void asd_print_export(asd_tree_t *tree) {
 
 
 
-void generate_expression_code(asd_tree_t * operator, char * op1_temp, char * op2_temp, bool is_binary){
-    operator->temp = generate_temp();
-    char *instruction = is_binary ? select_binary_instruction(operator->label) : select_unary_instruction(operator->label); 
-    add_iloc_operation(operator->code, new_iloc_operation(instruction, op1_temp, op2_temp, operator->temp));
+void generate_expression_code(asd_tree_t * operator, char * op1_temp, char * op2_temp, bool is_binary) {
+  operator->temp = generate_temp();
+  char *instruction = is_binary ? select_binary_instruction(operator->label) : select_unary_instruction(operator->label); 
+  add_iloc_operation(operator->code, new_iloc_operation(instruction, op1_temp, op2_temp, operator->temp));
 }
 
 
