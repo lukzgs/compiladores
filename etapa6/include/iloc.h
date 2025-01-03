@@ -19,10 +19,6 @@ typedef struct iloc_op {
   char* arg1;
   char* arg2;
   char* arg3;
-  int register_1;
-  int register_2;
-  char* base_1;
-  char* base_2;
 } iloc_op;
 
 // Estrutura para manter uma lista de operações ILOC
@@ -43,19 +39,19 @@ void print_iloc_op(iloc_op* operation);
 // Imprime a lista de operações ILOC da lista global
 void print_iloc_op_list(iloc_op_list * list);
 
-char *generate_label();
+char *generate_label(); 
 
 char *select_unary_instruction(char * operation);
 
-char *select_binary_instruction(char * operation);
+char *select_binary_instruction(char * operation); 
 
-char *generate_temp();
+char *generate_temp(); 
 
 iloc_op_list* copy_list(iloc_op_list *dest, iloc_op_list *src);
 
-iloc_op_list* create_iloc_list();
+iloc_op_list* create_iloc_list(); 
 
-char * get_unary_constant(char * operation);
+char * get_unary_constant(char * operation); 
 
 void free_iloc_op_list(iloc_op_list *lst);
 

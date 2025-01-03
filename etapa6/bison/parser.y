@@ -123,7 +123,7 @@ cabecalho:
     );
    };
 corpo:
-  bloco_comandos_funcao desempilha_tabela { $$ = $1; };
+  bloco_comandos_funcao { $$ = $1; };
 
 tipo:
   TK_PR_INT  { $$ = INT; } |
@@ -280,6 +280,7 @@ retorno:
   TK_PR_RETURN expressao {
     $$ = asd_new("return");
     asd_add_child($$, $2);
+    $$->code = add_iloc_operation($$->code, new_iloc_operation("return", $2->temp, NULL, NULL)); 
   };
 
 
