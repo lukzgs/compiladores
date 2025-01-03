@@ -1,0 +1,36 @@
+fun => int 
+{
+	return 1;
+}
+foo => float 
+{
+	return 0.0;
+}
+power_two = x <- int > int
+{
+	return x * x; 
+}
+sum_all = x <- int | y <- float | w <- float > float 
+{
+	return x + y + w; 
+}
+
+max =  a <- int | b <- int | c <- int > int 
+{
+	if (a > b & a > c){
+		int useless, u2, u3 <= 4; 
+		return a; 
+	} else {
+		if (b > c){
+			int u1, u2 <= 2, u3 <= 4; 
+			return b;
+		} else {
+			return c;
+		};
+	};
+	a = 2.2;
+	b = a + 2 * 4 & 2;
+	c = max(a, b); 
+
+}
+

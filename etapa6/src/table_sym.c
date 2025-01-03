@@ -30,13 +30,13 @@ table_symbol *table_new() {
   table_symbol *ret = NULL;
   ret = calloc(1, sizeof(table_symbol));
   if (ret != NULL) {
-    ret->first_row = NULL;
-    ret->last_row = NULL;
-    ret->next_table = NULL;
-    ret->previous_table = NULL;
-    ret->shift = 0;
+      ret->first_row = NULL;
+      ret->last_row = NULL;
+      ret->next_table = NULL;
+      ret->previous_table = NULL;
+      ret->shift = 0;
   }
-  return ret;
+  return ret; 
 }
 
 table_symbol *table_free(table_symbol *table) {
@@ -77,7 +77,7 @@ void table_add_row(table_symbol *table, row_symbol *next_row) {
     next_row->shift = malloc( length + 1 );
     snprintf(next_row->shift, length + 1, "%d", table->shift);
     table->shift += sizeof(int);
-    next_row->temp = generate_temp();
+    next_row->temp = generate_temp(); 
   } else {
     printf("Erro: %s recebeu parâmetro table = %p / %p.\n", __FUNCTION__, table, next_row);
   }
@@ -118,7 +118,7 @@ void table_print(const table_symbol *table) {
 
 int is_identifier_declared(const table_symbol * table, const char * identifier) {
   row_symbol * row = table->first_row;
-  while (row != NULL) {
+  while (row != NULL){
     if (!strcmp(row->value, identifier))
       return 1;
     row = row->next_row;
@@ -142,12 +142,12 @@ row_symbol *  get_row_from_stack(const table_symbol * current_table, const char 
       return row;
     current_table = current_table->previous_table;
   }
-  return NULL;
+  return NULL; 
 }
 
 
 row_symbol * get_row_from_scope(const table_symbol * table, const char * identifier) {
-  row_symbol * row = table->first_row;
+    row_symbol * row = table->first_row;
   while (row != NULL) {
     if (!strcmp(row->value, identifier))
       return row;
@@ -156,14 +156,36 @@ row_symbol * get_row_from_scope(const table_symbol * table, const char * identif
   return NULL;
 }
 
+
+row_symbol * get_row_from_scope_or_throw(const table_symbol * table, const char * identifier){
+  row_symbol * row = get_row_from_scope(table, identifier);
+  if (row == NULL){
+    fprintf(stderr, "Error in get_row_from_scope_or_throw, couldn't find row %s\n", identifier); 
+    exit(1); 
+  } 
+  return row; 
+}
+
+
+row_symbol * get_or_create_row_from_scope(table_symbol * table, char * identifier){
+  row_symbol * row = get_row_from_scope(table, identifier);
+  if (row == NULL){
+    table_add_row(table, new_row(-1, NULL_TYPE, REGISTER, identifier)); 
+    return get_row_from_scope(table, identifier); 
+  } else {
+    return row; 
+  }
+
+}
+
 const char* get_str_symbol_kind(symbol_kind kind) {
-  if (kind == VARIABLE)
+  if (kind == VARIABLE) {
     return "VARIABLE";
-  else if (kind == FUNCTION)
+  } else if (kind == FUNCTION) {
     return "FUNCTION";
-  else {
+  } else {
     fprintf(stderr, "Kind unidentified %d\n", kind);
-    exit(1);
+    exit(1); 
   }
 }
 
@@ -177,10 +199,11 @@ void verify_identifier(const table_symbol * current_table, const char * current_
   if (row->kind != desired_kind) {
     fprintf(stderr, "Identificador [%s] usado na linha [%d] declarado como [%s] mas usado como [%s]\n", current_identifier, yylineno, get_str_symbol_kind(row->kind), get_str_symbol_kind(desired_kind));
 
-    if (row->kind == VARIABLE)
+    if (row->kind == VARIABLE) {
       exit(ERR_VARIABLE);
-    else if (row->kind == FUNCTION)
+    } else if (row->kind == FUNCTION) {
       exit(ERR_FUNCTION);
+    }
   }
 }
 

@@ -1,0 +1,16 @@
+// undeclared c
+fun = i <- int | y <- float  > float {
+	int a;
+	{
+		int b;
+		b = 2 + a;
+		if (a > b){
+			return 0.0;
+		} else {
+			return 2.2; 	
+		};
+	};
+
+	c(2); 
+
+}

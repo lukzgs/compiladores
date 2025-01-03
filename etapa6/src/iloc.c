@@ -5,8 +5,6 @@
 
 #include "iloc.h"
 
-
-
 // Cria uma nova operação ILOC
 iloc_op* new_iloc_operation(char* operation, char* arg1, char* arg2, char* arg3) {
 
@@ -47,7 +45,7 @@ iloc_op *copy_operation(iloc_op * operation){
     op->arg2 = strdup(operation->arg2);  
   if (operation->arg3 != NULL)
     op->arg3 = strdup(operation->arg3);
-  
+
   return op;
 }
 
@@ -113,11 +111,11 @@ iloc_op_list* add_iloc_operation(iloc_op_list * list, iloc_op* new_iloc_op) {
 // Função para imprimir uma operação ILOC
 void print_iloc_op(iloc_op* operation) {
   char* mnemonico = operation->mnemonico;
-  if (strcmp(mnemonico, "storeAI") == 0 || !strcmp(mnemonico, "storeAO")) 
-    // storeAI r1 => r2, c3 // Memoria(r2 + c3) = r1
+  if (!strcmp(mnemonico, "storeAO")) 
+    // storeAO r1 => r2, r3 // Memoria(r2 + r3) = r1
     printf("%s %s => %s, %s", operation->mnemonico, operation->arg1, operation->arg2, operation->arg3);
-  else if (strcmp(mnemonico, "loadAI") == 0 || !strcmp(mnemonico, "loadAO"))
-    // loadAI r1, c2 => r3 // r3 = Memoria(r1 + c2)
+  else if (!strcmp(mnemonico, "loadAO"))
+    // loadAO r1, r2 => r3 // r3 = Memoria(r1 + r2)
     printf("%s %s, %s => %s", operation->mnemonico, operation->arg1, operation->arg2, operation->arg3);
   else if (strcmp(mnemonico, "loadI") == 0)
     // loadI c1 => r2 // r2 = c1
@@ -162,26 +160,26 @@ char *generate_label() {
   int length = snprintf( NULL, 0, "L%d", label_num );
   char* str = malloc( length + 1 );
   snprintf( str, length + 1, "L%d", label_num);
-  label_num++;
-  return str;
+  label_num++; 
+  return str; 
 }
 
 char *generate_temp() {
-  static int temp_num = 0;
+  static int temp_num = 0; 
   int length = snprintf( NULL, 0, "r%d", temp_num );
   char* str = malloc( length + 1 );
   snprintf( str, length + 1, "r%d", temp_num);
   temp_num++;
-  return str;
+  return str; 
 }
 
 char *select_unary_instruction(char * operation) {
   if (!strcmp(operation, "!"))
-    return "cmp_EQ";
+    return "cmp_EQ";  
   if (!strcmp(operation, "-"))
-    return "mult";
-  printf("Error in function select_unary_instruction");
-  exit(1);
+    return "mult";  
+  printf("Error in function select_unary_instruction"); 
+  exit(1); 
 }
 
 char * get_unary_constant(char * operation) {
@@ -190,16 +188,16 @@ char * get_unary_constant(char * operation) {
   if (!strcmp(operation, "-"))
     return "-1";
   printf("Error in function get_unary_constant"); 
-  exit(1);
+  exit(1); 
 }
 
 char *select_binary_instruction(char * operation) {
   if (!strcmp(operation, "+"))
-    return "add";
+    return "add"; 
   if (!strcmp(operation, "-"))
-    return "sub";
+    return "sub"; 
   if (!strcmp(operation, "*"))
-    return "mult";
+    return "mult"; 
   if (!strcmp(operation, "/"))
     return "div"; 
   if (!strcmp(operation, "=="))
@@ -219,7 +217,7 @@ char *select_binary_instruction(char * operation) {
   if (!strcmp(operation, "|"))
     return "or";
   printf("Error in function select_binary_instruction"); 
-  exit(1);
+  exit(1); 
 }
 
 #endif
