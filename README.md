@@ -19,5 +19,6 @@ Dentro de cada etapa, existe um arquivo chamado eX_avaliacao.zip onde se encontr
 - E3: 10 - 10 - 10
 - E4: 10 - 9.18 - 9.59
 - E5: 10 - 9.3 - 9.65
+- E6: 10 - 9 - 9.5
 
 Autores: Lucas Guaitanelli da Silveira e Vithor Barros Pileco
